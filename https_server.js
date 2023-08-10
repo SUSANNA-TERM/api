@@ -1,11 +1,10 @@
 const fs = require('fs');
 const https = require('https');
 const crypto = require('crypto');
+const swagger = require('./swagger');
 
 // Import the express module
 const express = require("express");
-
-
 
 const app = express();
 
@@ -27,6 +26,8 @@ https.createServer(
   )
   .listen(port, hostname, () => {
     console.log("Server listening on https://"+hostname+":"+port+"/");
+
+	swagger(app, port)
   });
   
   
@@ -117,6 +118,46 @@ function command_controller(command, res, req_body, body_length){
 }
 
 
+/**
+ * @swagger
+ *
+ * /api/write:
+ *  post:
+ *    tags:
+ *      - Write
+ *    summary: Writes some data
+ *    requestBody:
+ *     required: true
+ *     content:
+ *       application/json:
+ *         schema:
+ *           type: object
+ *           properties:
+ *             id:
+ *               type: integer
+ *             data:
+ *               type: string
+ *           example:
+ *             id: 1
+ *             data: some data
+ *    responses:
+ *      '200':
+ *        description: OK
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                result:
+ *                  type: string
+ *                success:
+ *                  type: boolean
+ *              example:
+ *                result: Complete!
+ *                success: true
+ *      '400':
+ *        description: bad request
+ */
 function write(res, parameters, parameters_length) {
 	// Check the number of parameters
 	if (parameters_length != 3) {
@@ -128,7 +169,32 @@ function write(res, parameters, parameters_length) {
 	res.status(200).json({ "result": "Complete!", "success": true });
 }
 
-
+/**
+ * @swagger
+ *
+ * /api/read:
+ *  post:
+ *    tags:
+ *      - Reads
+ *    summary: Reads some data
+ *    responses:
+ *      '200':
+ *        description: OK
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                result:
+ *                  type: string
+ *                success:
+ *                  type: boolean
+ *              example:
+ *                result: Complete!
+ *                success: true
+ *      '400':
+ *        description: bad request
+ */
 function read(res, parameters, parameters_length) {
 	// Check the number of parameters
 	if (parameters_length != 1) {
