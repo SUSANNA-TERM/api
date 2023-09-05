@@ -15,6 +15,9 @@ const hostname = 'localhost';
 const port = 8080;
 const key = '12345';
 
+// set up swagger
+swagger(app, port)
+
 https.createServer(
 		// Provide the private and public key to the server by reading each
 		// file's content with the readFileSync() method.
@@ -26,8 +29,6 @@ https.createServer(
   )
   .listen(port, hostname, () => {
     console.log("Server listening on https://"+hostname+":"+port+"/");
-
-	swagger(app, port)
   });
   
   
@@ -100,6 +101,14 @@ app.post('/api/:command', express.json(), (req, res) => {
   
 });
 
+// register error handler
+app.use((err, req, res, next) => {
+	// format error
+	res.status(err.status || 500).json({
+		result: err.message,
+		success: false,
+	});
+});
 
 function command_controller(command, res, req_body, body_length){
 

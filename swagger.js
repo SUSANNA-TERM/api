@@ -1,10 +1,12 @@
 const swaggerDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 const version = require("./package.json").version;
+const OpenApiValidator = require('express-openapi-validator');
+
 
 const options = {
     definition: {
-        openapi: "3.1.0",
+        openapi: "3.0.0",
         info: {
             version,
             title: "API Docs",
@@ -30,6 +32,18 @@ function swagger(app, port) {
         res.setHeader("Content-Type", "application/json");
         res.send(specs);
     });
+
+    // Setup OpenAPI validation middleware
+    app.use(
+        OpenApiValidator.middleware({
+            apiSpec: specs,
+            validateApiSpec: true,
+            validateRequests: {
+                removeAdditional: 'all',
+            },
+            validateResponses: true,
+        }),
+    );
 
     console.log(`Docs available at https://localhost:${port}/docs`);
 }
