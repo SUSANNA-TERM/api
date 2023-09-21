@@ -1,6 +1,6 @@
 const fs = require('fs');
 const https = require('https');
-const swagger = require('./swagger');
+const { swagger, openAPIValidator } = require('./swagger');
 
 // Import the express module
 const express = require("express");
@@ -18,15 +18,19 @@ const checkAuthorization = (req, res, next) => {
 	next();
 };
 
-// apply json middleware globally
-app.use(express.json())
-
 // set up swagger
 swagger(app, port)
+
+// apply json middleware globally
+app.use(express.json())
 
 // apply authorization middleware globally
 app.use(checkAuthorization);
 
+// setup OpenAPI validator
+openAPIValidator(app)
+
+// create server
 https.createServer(
 		// Provide the private and public key to the server by reading each
 		// file's content with the readFileSync() method.
@@ -85,41 +89,11 @@ https.createServer(
  *                result: Complete!
  *                success: true
  *      '400':
- *        description: bad request
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                result:
- *                  type: string
- *                success:
- *                  type: boolean
- *      '404':
- *        description: not found
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                result:
- *                  type: string
- *                success:
- *                  type: boolean
+ *        $ref: '#/components/responses/BadRequest'
  *      '401':
- *        description: not found
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                result:
- *                  type: string
- *                success:
- *                  type: boolean
- *              example:
- *                result: Unauthorized attempt!
- *                success: false
+ *        $ref: '#/components/responses/Unauthorized'
+ *      '404':
+ *        $ref: '#/components/responses/NotFound'
  */
   // STATIC API URL
 app.post('/api', (req, res) => {
@@ -226,38 +200,11 @@ function command_controller(commands, command, req, res) {
  *                result: Complete!
  *                success: true
  *      '400':
- *        description: bad request
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                result:
- *                  type: string
- *                success:
- *                  type: boolean
- *      '404':
- *        description: not found
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                result:
- *                  type: string
- *                success:
- *                  type: boolean
+ *        $ref: '#/components/responses/BadRequest'
  *      '401':
- *        description: not found
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                result:
- *                  type: string
- *                success:
- *                  type: boolean
+ *        $ref: '#/components/responses/Unauthorized'
+ *      '404':
+ *        $ref: '#/components/responses/NotFound'
  */
 function write(res, body) {
 	res.status(200).json({ "result": "Complete!", "success": true, body });
@@ -287,38 +234,11 @@ function write(res, body) {
  *                result: Complete!
  *                success: true
  *      '400':
- *        description: bad request
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                result:
- *                  type: string
- *                success:
- *                  type: boolean
- *      '404':
- *        description: not found
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                result:
- *                  type: string
- *                success:
- *                  type: boolean
+ *        $ref: '#/components/responses/BadRequest'
  *      '401':
- *        description: not found
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                result:
- *                  type: string
- *                success:
- *                  type: boolean
+ *        $ref: '#/components/responses/Unauthorized'
+ *      '404':
+ *        $ref: '#/components/responses/NotFound'
  */
 function read(res) {
 	res.status(200).json({ "result": "Complete!", "success": true });

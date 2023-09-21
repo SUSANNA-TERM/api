@@ -16,6 +16,64 @@ const options = {
                 url: "https://www.athenarc.gr/",
                 email: "info@athena-innovation.gr",
             },
+        },
+        components: {
+            responses: {
+                BadRequest: {
+                    description: "bad request",
+                    content: {
+                        "application/json": {
+                            schema: {
+                                type: "object",
+                                properties: {
+                                    result: { type: "string" },
+                                    success: { type: "boolean" },
+                                },
+                                example: {
+                                    result: "Bad request!",
+                                    success: false,
+                                }
+                            }
+                        }
+                    }
+                },
+                NotFound: {
+                    description: "not found",
+                    content: {
+                        "application/json": {
+                            schema: {
+                                type: "object",
+                                properties: {
+                                    result: { type: "string" },
+                                    success: { type: "boolean" },
+                                },
+                                example: {
+                                    result: "Not found!",
+                                    success: false,
+                                }
+                            }
+                        }
+                    }
+                },
+                Unauthorized: {
+                    description: "unauthorized attempt",
+                    content: {
+                        "application/json": {
+                            schema: {
+                                type: "object",
+                                properties: {
+                                    result: { type: "string" },
+                                    success: { type: "boolean" },
+                                },
+                                example: {
+                                    result: "Unauthorized attempt!",
+                                    success: false,
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     apis: ["./https_server.js"],
@@ -23,6 +81,7 @@ const options = {
 
 const specs = swaggerDoc(options);
 
+// Serve documentation
 function swagger(app, port) {
     // Swagger page
     app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs, { explorer: true }));
@@ -33,7 +92,11 @@ function swagger(app, port) {
         res.send(specs);
     });
 
-    // Setup OpenAPI validation middleware
+    console.log(`Docs available at https://localhost:${port}/docs`);
+}
+
+// Setup OpenAPI validation middleware
+function openAPIValidator(app) {
     app.use(
         OpenApiValidator.middleware({
             apiSpec: specs,
@@ -44,8 +107,9 @@ function swagger(app, port) {
             validateResponses: true,
         }),
     );
-
-    console.log(`Docs available at https://localhost:${port}/docs`);
 }
 
-module.exports = swagger;
+module.exports = {
+    swagger,
+    openAPIValidator
+};
