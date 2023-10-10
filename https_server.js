@@ -1,14 +1,29 @@
 const fs = require('fs');
 const https = require('https');
 const { swagger, openAPIValidator } = require('./swagger');
+const { FabricGateway, loadCredentials } = require('./fabric-gateway-wrapper');
 
 // Import the express module
 const express = require("express");
 
 const app = express();
-const hostname = 'localhost';
-const port = 8080;
+const hostname = '0.0.0.0';
+const port = 8888;
 const key = '12345';
+
+const Contracts = {
+	Info: 'Info'
+};
+
+const credentials = loadCredentials(
+	'/etc/hyperledger/client/athenarc/client/client1/msp/signcerts/cert.pem',
+	'/etc/hyperledger/client/athenarc/client/client1/msp/keystore/key.pem',
+	'/etc/hyperledger/client/tls-chain-cert/tls-ca-cert.pem',
+	'/etc/hyperledger/client/athenarc/peer/ledger1/tls/keystore/key.pem',
+	'/etc/hyperledger/client/athenarc/peer/ledger1/tls/signcerts/cert.pem'
+);
+
+const gateway = new FabricGateway('ledger1.drosatos.eu:7051', credentials)
 
 // middleware that handles authorization
 const checkAuthorization = (req, res, next) => {
@@ -96,27 +111,80 @@ https.createServer(
  *        $ref: '#/components/responses/NotFound'
  */
   // STATIC API URL
-app.post('/api', (req, res) => {
-	const command = req.body["command"];
-	// Check if command parameter exists
-	if (typeof command !== 'undefined' && command) {
-		// Check for command (case insensitive)
-		post_command_controller(command.toLowerCase(), req, res);
-
-	} else {
-		res.status(400).json({ "result": "Command parameter is missing!", "success": false });
+app.post('/api', async (req, res, next) => {
+	try {
+		const command = req.body["command"];
+		if (typeof command !== 'undefined' && command) {
+			await post_command_controller(command.toLowerCase(), req, res);
+		} else {
+			res.status(400).json({ "result": "Command parameter is missing!", "success": false });
+		}
+	} catch (error) {
+		next(error);
 	}
 });
 
-
   // DYNAMIC API POST URL
-app.post('/api/:command', (req, res) => {
-	post_command_controller(req.params.command.toLowerCase(), req, res);
+app.post('/api/:command', async (req, res, next) => {
+	try {
+		await post_command_controller(req.params.command.toLowerCase(), req, res);
+	} catch (error) {
+		next(error);
+	}
+});
+
+// DYNAMIC API POST URL FOR PRIVATE COLLECTIONS
+app.post('/api/:command/collections/:collection', async (req, res, next) => {
+	try {
+		await post_command_controller(req.params.command.toLowerCase(), req, res);
+	} catch (error) {
+		next(error);
+	}
+});
+
+// DYNAMIC API PUT URL
+app.put('/api/:command/:id', async (req, res, next) => {
+	try {
+		await put_command_controller(req.params.command.toLowerCase(), req, res);
+	} catch (error) {
+		next(error);
+	}
+});
+
+// DYNAMIC API PUT URL FOR SPECIFIC ITEMS OF PRIVATE COLLECTIONS
+app.put('/api/:command/:id/collections/:collection', async (req, res, next) => {
+	try {
+		await put_command_controller(req.params.command.toLowerCase(), req, res);
+	} catch (error) {
+		next(error);
+	}
 });
 
 // DYNAMIC API GET URL
-app.get('/api/:command', (req, res) => {
-	get_command_controller(req.params.command.toLowerCase(), req, res);
+app.get('/api/:command', async (req, res, next) => {
+	try {
+		await get_command_controller(req.params.command.toLowerCase(), req, res);
+	} catch (error) {
+		next(error);
+	}
+});
+
+// DYNAMIC API GET URL FOR SPECIFIC ITEMS
+app.get('/api/:command/:id', async (req, res, next) => {
+	try {
+		await get_command_controller(req.params.command.toLowerCase(), req, res);
+	} catch (error) {
+		next(error);
+	}
+});
+
+// DYNAMIC API GET URL FOR SPECIFIC ITEMS OF PRIVATE COLLECTIONS
+app.get('/api/:command/:id/collections/:collection', async (req, res, next) => {
+	try {
+		await get_command_controller(req.params.command.toLowerCase(), req, res);
+	} catch (error) {
+		next(error);
+	}
 });
 
 // register error handler
@@ -128,24 +196,31 @@ app.use((err, req, res, next) => {
 	});
 });
 
-function post_command_controller(command, req, res){
+async function post_command_controller(command, req, res) {
 	const commands = {
-		'write': write
+		'meters': write
 	};
 
-	command_controller(commands, command, req, res);
+	await command_controller(commands, command, req, res);
 }
 
-
-function get_command_controller(command, req, res) {
+async function put_command_controller(command, req, res) {
 	const commands = {
-		'read': read
+		'meters': update
 	};
 
-	command_controller(commands, command, req, res);
+	await command_controller(commands, command, req, res);
 }
 
-function command_controller(commands, command, req, res) {
+async function get_command_controller(command, req, res) {
+	const commands = {
+		'meters': read
+	};
+
+	await command_controller(commands, command, req, res);
+}
+
+async function command_controller(commands, command, req, res) {
 	if (!command) {
 		return res.status(400).json({ "result": "Command parameter is missing!", "success": false });
 	}
@@ -153,7 +228,7 @@ function command_controller(commands, command, req, res) {
 	const func = commands[command.toLowerCase()];
 
 	if (func) {
-		func(res, req.body);
+		await func(res, req, req.body);
 	} else {
 		res.status(404).json({ "result": "Command not found!", "success": false });
 	}
@@ -206,8 +281,23 @@ function command_controller(commands, command, req, res) {
  *      '404':
  *        $ref: '#/components/responses/NotFound'
  */
-function write(res, body) {
-	res.status(200).json({ "result": "Complete!", "success": true, body });
+async function write(res, req, body) {
+	try {
+		const result = await gateway.execute('channel1', Contracts.Info, 'CreateAsset', req.params.command.toLowerCase(), String(body.id), JSON.stringify(body), req.params.collection || '')
+		res.status(200).json({ message: "Item added!", success: true, result });
+	} catch (error) {
+		throw new Error(JSON.stringify(error.details))
+	}
+}
+
+async function update(res, req, body) {
+	try {
+		const { id, ...data } = body;
+		const result = await gateway.execute('channel1', Contracts.Info, 'UpdateAsset', req.params.command.toLowerCase(), req.params.id.toLowerCase(), JSON.stringify(data), req.params.collection || '')
+		res.status(200).json({ message: "Item updated!", success: true, result });
+	} catch (error) {
+		throw new Error(JSON.stringify(error.details))
+	}
 }
 
 /**
@@ -240,6 +330,11 @@ function write(res, body) {
  *      '404':
  *        $ref: '#/components/responses/NotFound'
  */
-function read(res) {
-	res.status(200).json({ "result": "Complete!", "success": true });
+async function read(res, req) {
+	try {
+		const result = await gateway.query('channel1', Contracts.Info, 'ReadAsset', req.params.command.toLowerCase(), req.params.id, req.params.collection || '')
+		res.status(200).json({ message: "Item added!", success: true, result });
+	} catch (error) {
+		throw new Error(JSON.stringify(error.details))
+	}
 }
