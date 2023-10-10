@@ -5,6 +5,7 @@ const OpenApiValidator = require('express-openapi-validator');
 
 
 const options = {
+    failOnErrors: true,
     definition: {
         openapi: "3.0.0",
         info: {
@@ -19,6 +20,29 @@ const options = {
         },
         components: {
             responses: {
+                Success: {
+                    description: "OK",
+                    content: {
+                        "application/json": {
+                            schema: {
+                                type: "object",
+                                properties: {
+                                    message: { type: "string" },
+                                    success: { type: "boolean" },
+                                    result: { type: "object" }
+                                },
+                                example: {
+                                    message: "completed!",
+                                    success: true,
+                                    result: {
+                                        id: 1,
+                                        data: '...'
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
                 BadRequest: {
                     description: "bad request",
                     content: {
@@ -73,10 +97,28 @@ const options = {
                         }
                     }
                 }
+            },
+            securitySchemes: {
+                ApiKeyAuth: {
+                    type: "apiKey",
+                    in: "header",
+                    name: "authorization"
+                }
             }
-        }
+        },
+        security: [
+            {
+                ApiKeyAuth: []
+            }
+        ],
+        servers: [
+            {
+                url: "https://ledger1.drosatos.eu:8888",
+                description: "Test server"
+            }
+        ]
     },
-    apis: ["./https_server.js"],
+    apis: ["components/*", "./https_server.js"],
 };
 
 const specs = swaggerDoc(options);

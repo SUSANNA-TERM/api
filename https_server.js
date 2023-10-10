@@ -58,7 +58,7 @@ https.createServer(
   .listen(port, hostname, () => {
     console.log("Server listening on https://"+hostname+":"+port+"/");
   });
-  
+
 
 /**
  * @swagger
@@ -90,19 +90,7 @@ https.createServer(
  *             data: some data
  *    responses:
  *      '200':
- *        description: OK
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                result:
- *                  type: string
- *                success:
- *                  type: boolean
- *              example:
- *                result: Complete!
- *                success: true
+ *        $ref: '#/components/responses/Success'
  *      '400':
  *        $ref: '#/components/responses/BadRequest'
  *      '401':
@@ -110,7 +98,7 @@ https.createServer(
  *      '404':
  *        $ref: '#/components/responses/NotFound'
  */
-  // STATIC API URL
+// STATIC API URL
 app.post('/api', async (req, res, next) => {
 	try {
 		const command = req.body["command"];
@@ -124,7 +112,7 @@ app.post('/api', async (req, res, next) => {
 	}
 });
 
-  // DYNAMIC API POST URL
+// DYNAMIC API POST URL
 app.post('/api/:command', async (req, res, next) => {
 	try {
 		await post_command_controller(req.params.command.toLowerCase(), req, res);
@@ -234,46 +222,91 @@ async function command_controller(commands, command, req, res) {
 	}
 }
 
-
 /**
  * @swagger
  *
- * /api/write:
+ * /api/Meters:
  *  post:
  *    tags:
- *      - Write
- *    summary: Writes some data
+ *      - Meter
+ *    summary: Writes the given meter in the blockchain
  *    requestBody:
  *     required: true
  *     content:
  *       application/json:
  *         schema:
- *           type: object
- *           properties:
- *             id:
- *               type: integer
- *             data:
- *               type: string
- *           required:
- *             - id
- *           example:
- *             id: 1
- *             data: some data
+ *           allOf:
+ *             - $ref: '#/components/schemas/Meter'
+ *             - required:
+ *               - id
+ *               - meter_id
+ *               - type
+ *               - metertype_id
+ *               - type_id
+ *               - mote
+ *               - barcode
+ *               - consumer
+ *               - provision
+ *               - lat
+ *               - lng
+ *               - address
+ *               - description
+ *               - region_id
+ *               - location_id
+ *               - address_name
  *    responses:
  *      '200':
- *        description: OK
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                result:
- *                  type: string
- *                success:
- *                  type: boolean
- *              example:
- *                result: Complete!
- *                success: true
+ *        $ref: '#/components/responses/Success'
+ *      '400':
+ *        $ref: '#/components/responses/BadRequest'
+ *      '401':
+ *        $ref: '#/components/responses/Unauthorized'
+ *      '404':
+ *        $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ *
+ * /api/Meters/collections/{collection}:
+ *  post:
+ *    tags:
+ *      - Meter
+ *    summary: Writes the given meter in a private collection in the blockchain
+ *    parameters:
+ *      - name: collection
+ *        in: path
+ *        required: true
+ *        description: The private collection in which the meter should be written
+ *        schema:
+ *          type : string
+ *    requestBody:
+ *     required: true
+ *     content:
+ *       application/json:
+ *         schema:
+ *           allOf:
+ *             - $ref: '#/components/schemas/Meter'
+ *             - required:
+ *               - id
+ *               - meter_id
+ *               - type
+ *               - metertype_id
+ *               - type_id
+ *               - mote
+ *               - barcode
+ *               - consumer
+ *               - provision
+ *               - lat
+ *               - lng
+ *               - address
+ *               - description
+ *               - region_id
+ *               - location_id
+ *               - address_name
+ *    responses:
+ *      '200':
+ *        $ref: '#/components/responses/Success'
  *      '400':
  *        $ref: '#/components/responses/BadRequest'
  *      '401':
@@ -290,6 +323,76 @@ async function write(res, req, body) {
 	}
 }
 
+
+/**
+ * @swagger
+ *
+ * /api/Meters/{id}:
+ *  put:
+ *    tags:
+ *      - Meter
+ *    summary: Updates the meter with the given ID
+ *    parameters:
+ *      - name: id
+ *        in: path
+ *        required: true
+ *        description: ID of the meter
+ *        schema:
+ *          type : string
+ *    requestBody:
+ *     required: true
+ *     content:
+ *       application/json:
+ *         schema:
+ *           $ref: '#/components/schemas/Meter'
+ *    responses:
+ *      '200':
+ *        $ref: '#/components/responses/Success'
+ *      '400':
+ *        $ref: '#/components/responses/BadRequest'
+ *      '401':
+ *        $ref: '#/components/responses/Unauthorized'
+ *      '404':
+ *        $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ *
+ * /api/Meters/{id}/collections/{collection}:
+ *  put:
+ *    tags:
+ *      - Meter
+ *    summary: Updates the meter that belongs to the specified private collection and corresponds to the given ID
+ *    parameters:
+ *      - name: id
+ *        in: path
+ *        required: true
+ *        description: ID of the meter
+ *        schema:
+ *          type : string
+ *      - name: collection
+ *        in: path
+ *        required: true
+ *        description: The private collection in which the meter belongs
+ *        schema:
+ *          type : string
+ *    requestBody:
+ *     required: true
+ *     content:
+ *       application/json:
+ *         schema:
+ *           $ref: '#/components/schemas/Meter'
+ *    responses:
+ *      '200':
+ *        $ref: '#/components/responses/Success'
+ *      '400':
+ *        $ref: '#/components/responses/BadRequest'
+ *      '401':
+ *        $ref: '#/components/responses/Unauthorized'
+ *      '404':
+ *        $ref: '#/components/responses/NotFound'
+ */
 async function update(res, req, body) {
 	try {
 		const { id, ...data } = body;
@@ -303,26 +406,54 @@ async function update(res, req, body) {
 /**
  * @swagger
  *
- * /api/read:
+ * /api/Meters/{id}:
  *  get:
  *    tags:
- *      - Read
- *    summary: Reads some data
+ *      - Meter
+ *    summary: Returns a meter by ID
+ *    parameters:
+ *      - name: id
+ *        in: path
+ *        required: true
+ *        description: ID of the meter
+ *        schema:
+ *          type : string
  *    responses:
  *      '200':
- *        description: OK
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                result:
- *                  type: string
- *                success:
- *                  type: boolean
- *              example:
- *                result: Complete!
- *                success: true
+ *        $ref: '#/components/responses/Success'
+ *      '400':
+ *        $ref: '#/components/responses/BadRequest'
+ *      '401':
+ *        $ref: '#/components/responses/Unauthorized'
+ *      '404':
+ *        $ref: '#/components/responses/NotFound'
+ */
+
+
+/**
+ * @swagger
+ *
+ * /api/Meters/{id}/collections/{collection}:
+ *  get:
+ *    tags:
+ *      - Meter
+ *    summary: Returns the meter that belongs to the specified private collection and corresponds to the given ID
+ *    parameters:
+ *      - name: id
+ *        in: path
+ *        required: true
+ *        description: ID of the meter
+ *        schema:
+ *          type : string
+ *      - name: collection
+ *        in: path
+ *        required: true
+ *        description: The private collection in which the meter belongs
+ *        schema:
+ *          type : string
+ *    responses:
+ *      '200':
+ *        $ref: '#/components/responses/Success'
  *      '400':
  *        $ref: '#/components/responses/BadRequest'
  *      '401':
@@ -333,7 +464,7 @@ async function update(res, req, body) {
 async function read(res, req) {
 	try {
 		const result = await gateway.query('channel1', Contracts.Info, 'ReadAsset', req.params.command.toLowerCase(), req.params.id, req.params.collection || '')
-		res.status(200).json({ message: "Item added!", success: true, result });
+		res.status(200).json({ message: "Item retrieved!", success: true, result });
 	} catch (error) {
 		throw new Error(JSON.stringify(error.details))
 	}
