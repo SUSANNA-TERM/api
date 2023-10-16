@@ -49,6 +49,7 @@ const gatewayStatus = (req, res, next) => {
 	if (!gateway.connected) {
 		next(new Error(`Gateway not connected. Details: ${gateway.connectionError.toString()}`))
 	}
+	next();
 }
 
 // set up swagger
