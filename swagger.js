@@ -29,7 +29,17 @@ const options = {
                                 properties: {
                                     message: { type: "string" },
                                     success: { type: "boolean" },
-                                    result: { type: "object" }
+                                    result: {
+                                        oneOf: [
+                                            {
+                                                type: "object"
+                                            },
+                                            {
+                                                type: "array",
+                                                items: { type: "object" }
+                                            }
+                                        ]
+                                    }
                                 },
                                 example: {
                                     message: "completed!",
