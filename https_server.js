@@ -169,8 +169,37 @@ app.put('/api/:command/:id/collections/:collection', async (req, res, next) => {
 	}
 });
 
+// STATIC API GET URL THAT RETURNS ALL METERS IN A CONCISE RESPONSE
+app.get('/api/Meters/concise', async (req, res, next) => {
+	try {
+		const result = await gateway.query('channel1', Chaincodes.Info, Functions.GetAllMeters, '')
+		res.status(200).json({ message: "Item retrieved!", success: true, result });
+	} catch (error) {
+		next(new Error(JSON.stringify(error.details)))
+	}
+});
+
+// STATIC API GET URL THAT RETURNS ALL METERS OF A PRIVATE COLLECTION IN A CONCISE RESPONSE
+app.get('/api/Meters/concise/collections/:collection', async (req, res, next) => {
+	try {
+		const result = await gateway.query('channel1', Chaincodes.Info, Functions.GetAllMeters, req.params.collection)
+		res.status(200).json({ message: "Item retrieved!", success: true, result });
+	} catch (error) {
+		next(new Error(JSON.stringify(error.details)))
+	}
+});
+
 // DYNAMIC API GET URL
 app.get('/api/:command', async (req, res, next) => {
+	try {
+		await get_command_controller(req.params.command.toLowerCase(), req, res);
+	} catch (error) {
+		next(error);
+	}
+});
+
+// DYNAMIC API GET URL FOR SPECIFIC COLLECTIONS
+app.get('/api/:command/collections/:collection', async (req, res, next) => {
 	try {
 		await get_command_controller(req.params.command.toLowerCase(), req, res);
 	} catch (error) {
@@ -242,6 +271,44 @@ async function command_controller(commands, command, req, res) {
 		res.status(404).json({ "result": "Command not found!", "success": false });
 	}
 }
+
+/**
+ * @swagger
+ *
+ * /api/Meters/concise:
+ *  get:
+ *    tags:
+ *      - Meter
+ *    summary: Returns the ids and addresses of all the recorded meters
+ *    responses:
+ *      '200':
+ *        $ref: '#/components/responses/Success'
+ *      '400':
+ *        $ref: '#/components/responses/BadRequest'
+ *      '401':
+ *        $ref: '#/components/responses/Unauthorized'
+ *      '404':
+ *        $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ *
+ * /api/Meters/concise/collections/{collection}:
+ *  get:
+ *    tags:
+ *      - Meter
+ *    summary: Returns the ids and addresses of all the recorded meters
+ *    responses:
+ *      '200':
+ *        $ref: '#/components/responses/Success'
+ *      '400':
+ *        $ref: '#/components/responses/BadRequest'
+ *      '401':
+ *        $ref: '#/components/responses/Unauthorized'
+ *      '404':
+ *        $ref: '#/components/responses/NotFound'
+ */
 
 /**
  * @swagger
@@ -423,6 +490,63 @@ async function update(res, req, body) {
 		throw new Error(JSON.stringify(error.details))
 	}
 }
+
+/**
+ * @swagger
+ *
+ * /api/Meters:
+ *  get:
+ *    tags:
+ *      - Meter
+ *    summary: Returns all the meters
+ *    responses:
+ *      '200':
+ *        $ref: '#/components/responses/Success'
+ *      '400':
+ *        $ref: '#/components/responses/BadRequest'
+ *      '401':
+ *        $ref: '#/components/responses/Unauthorized'
+ *      '404':
+ *        $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ *
+ * /api/:command/collections/:collection:
+ *  get:
+ *    tags:
+ *      - Meter
+ *    summary: Returns all the meters
+ *    responses:
+ *      '200':
+ *        $ref: '#/components/responses/Success'
+ *      '400':
+ *        $ref: '#/components/responses/BadRequest'
+ *      '401':
+ *        $ref: '#/components/responses/Unauthorized'
+ *      '404':
+ *        $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ *
+ * /api/Meters:
+ *  get:
+ *    tags:
+ *      - Meter
+ *    summary: Returns all the meters
+ *    responses:
+ *      '200':
+ *        $ref: '#/components/responses/Success'
+ *      '400':
+ *        $ref: '#/components/responses/BadRequest'
+ *      '401':
+ *        $ref: '#/components/responses/Unauthorized'
+ *      '404':
+ *        $ref: '#/components/responses/NotFound'
+ */
 
 /**
  * @swagger
