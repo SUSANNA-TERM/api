@@ -176,7 +176,7 @@ app.get('/api/Meters/concise', async (req, res, next) => {
 		const result = await gateway.query('channel1', Chaincodes.Info, Functions.GetAllMeters, '')
 		res.status(200).json({ message: "Item retrieved!", success: true, result });
 	} catch (error) {
-		next(new Error(JSON.stringify(error.details)))
+		next(error)
 	}
 });
 
@@ -186,7 +186,7 @@ app.get('/api/Meters/concise/collections/:collection', async (req, res, next) =>
 		const result = await gateway.query('channel1', Chaincodes.Info, Functions.GetAllMeters, req.params.collection)
 		res.status(200).json({ message: "Item retrieved!", success: true, result });
 	} catch (error) {
-		next(new Error(JSON.stringify(error.details)))
+		next(error)
 	}
 });
 
@@ -228,6 +228,10 @@ app.get('/api/:command/:id/collections/:collection', async (req, res, next) => {
 
 // register error handler
 app.use((err, req, res, next) => {
+	if (err.details && err.details.length) {
+		err = new Error(JSON.stringify(err.details))
+	}
+
 	// format error
 	res.status(err.status || 500).json({
 		result: err.message,
@@ -408,7 +412,7 @@ async function write(res, req, body) {
 		const result = await gateway.execute('channel1', Chaincodes.Info, Functions.CreateAsset, req.params.command.toLowerCase(), String(body.id), JSON.stringify(body), req.params.collection || '')
 		res.status(200).json({ message: "Item added!", success: true, result });
 	} catch (error) {
-		throw new Error(JSON.stringify(error.details))
+		throw error
 	}
 }
 
@@ -488,7 +492,7 @@ async function update(res, req, body) {
 		const result = await gateway.execute('channel1', Chaincodes.Info, Functions.UpdateAsset, req.params.command.toLowerCase(), req.params.id.toLowerCase(), JSON.stringify(data), req.params.collection || '')
 		res.status(200).json({ message: "Item updated!", success: true, result });
 	} catch (error) {
-		throw new Error(JSON.stringify(error.details))
+		throw error
 	}
 }
 
@@ -621,6 +625,6 @@ async function read(res, req) {
 		}
 		res.status(200).json({ message: "Item retrieved!", success: true, result });
 	} catch (error) {
-		throw new Error(JSON.stringify(error.details))
+		throw error
 	}
 }
