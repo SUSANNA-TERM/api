@@ -518,7 +518,7 @@ async function update(res, req, body) {
 /**
  * @swagger
  *
- * /api/:command/collections/:collection:
+ * /api/{command}/collections/{collection}:
  *  get:
  *    tags:
  *      - Meter
