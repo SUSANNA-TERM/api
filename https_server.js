@@ -43,6 +43,14 @@ const checkAuthorization = (req, res, next) => {
 	next();
 };
 
+
+// middleware that checks if the hyperledger gateway is connected
+const gatewayStatus = (req, res, next) => {
+	if (!gateway.connected) {
+		next(new Error(`Gateway not connected. Details: ${gateway.connectionError.toString()}`))
+	}
+}
+
 // set up swagger
 swagger(app, port)
 
@@ -54,6 +62,9 @@ app.use(checkAuthorization);
 
 // setup OpenAPI validator
 openAPIValidator(app)
+
+// check gateway status prior to any request
+app.use(gatewayStatus)
 
 // create server
 https.createServer(
@@ -473,7 +484,16 @@ async function update(res, req, body) {
  */
 async function read(res, req) {
 	try {
-		const result = await gateway.query('channel1', Chaincodes.Info, Functions.GetAllAssets, req.params.command.toLowerCase(), req.params.id, req.params.collection || '')
+		let result;
+		const { command, id, collection } = req.params;
+
+		if (id && collection) {
+			result = await gateway.query('channel1', Chaincodes.Info, Functions.ReadAsset, command.toLowerCase(), id, collection)
+		} else if (id && !collection) {
+			result = await gateway.query('channel1', Chaincodes.Info, Functions.ReadAsset, command.toLowerCase(), id, '')
+		} else {
+			result = await gateway.query('channel1', Chaincodes.Info, Functions.GetAllAssets, req.params.command.toLowerCase(), req.params.collection || '')
+		}
 		res.status(200).json({ message: "Item retrieved!", success: true, result });
 	} catch (error) {
 		throw new Error(JSON.stringify(error.details))

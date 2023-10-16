@@ -8,26 +8,44 @@ const os = require('os');
 const utf8Decoder = new TextDecoder();
 
 function loadCredentials(clientCredentialsPath, clientPrivateKeyPath, clientTlsCertPath, peerPrivateKeyPath, certChainPath) {
-    return {
-        clientCredentials: fs.readFileSync(clientCredentialsPath),
-        clientPrivateKey: crypto.createPrivateKey(fs.readFileSync(clientPrivateKeyPath)),
-        clientTlsCert: fs.readFileSync(clientTlsCertPath),
-        peerPrivateKey: fs.readFileSync(peerPrivateKeyPath),
-        certChain: fs.readFileSync(certChainPath)
+    try {
+        const credentials = {
+            clientCredentials: fs.readFileSync(clientCredentialsPath),
+            clientPrivateKey: crypto.createPrivateKey(fs.readFileSync(clientPrivateKeyPath)),
+            clientTlsCert: fs.readFileSync(clientTlsCertPath),
+            peerPrivateKey: fs.readFileSync(peerPrivateKeyPath),
+            certChain: fs.readFileSync(certChainPath)
+        };
+
+        return credentials;
+    } catch (error) {
+        return {}
     }
 }
 
+// TODO: add function that checks gateway connection so that it can be called prior to any request
 class FabricGateway {
     constructor(address, { clientCredentials, clientPrivateKey, clientTlsCert, peerPrivateKey, certChain } = {}) {
-        const signer = signers.newPrivateKeySigner(clientPrivateKey);
-        const systemRootCerts = Buffer.from(tls.rootCertificates.join(os.EOL));
-        const rootCerts = Buffer.concat([clientTlsCert, systemRootCerts])
-        const identity = { mspId: 'Athenarc', credentials: clientCredentials };
-        this.client = new grpc.Client(address, grpc.credentials.createSsl(rootCerts, peerPrivateKey, certChain, false));
-        this.gateway = connect({ identity, signer, client: this.client });
+        try {
+            const signer = signers.newPrivateKeySigner(clientPrivateKey);
+            const systemRootCerts = Buffer.from(tls.rootCertificates.join(os.EOL));
+            const rootCerts = Buffer.concat([clientTlsCert, systemRootCerts])
+            const identity = { mspId: 'Athenarc', credentials: clientCredentials };
+
+            this.client = new grpc.Client(address, grpc.credentials.createSsl(rootCerts, peerPrivateKey, certChain, false));
+            this.gateway = connect({ identity, signer, client: this.client });
+            this.connected = true;
+        } catch (error) {
+            this.connected = false;
+            this.connectionError = error;
+        }
     }
 
     async execute(channel, contract, method, ...args) {
+        if (!this.connected) {
+            throw this.connectionError;
+        }
+
         const network = this.gateway.getNetwork(channel);
         const contractInstance = network.getContract(contract);
 
@@ -44,6 +62,10 @@ class FabricGateway {
     }
 
     async query(channel, contract, method, ...args) {
+        if (!this.connected) {
+            throw this.connectionError;
+        }
+
         const network = this.gateway.getNetwork(channel);
         const contractInstance = network.getContract(contract);
 
