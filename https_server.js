@@ -11,9 +11,19 @@ const hostname = '0.0.0.0';
 const port = 8888;
 const key = '12345';
 
-const Contracts = {
+const Chaincodes = {
 	Info: 'Info'
 };
+
+const Functions = {
+	CreateAsset: 'Asset:CreateAsset',
+	ReadAsset: 'Asset:ReadAsset',
+	UpdateAsset: 'Asset:UpdateAsset',
+	DeleteAsset: 'Asset:DeleteAsset',
+	AssetExists: 'Asset:AssetExists',
+	GetAllAssets: 'Asset:GetAllAssets',
+	GetAllMeters: 'Info:GetAllMeters'
+}
 
 const credentials = loadCredentials(
 	'/etc/hyperledger/client/athenarc/client/client1/msp/signcerts/cert.pem',
@@ -316,7 +326,7 @@ async function command_controller(commands, command, req, res) {
  */
 async function write(res, req, body) {
 	try {
-		const result = await gateway.execute('channel1', Contracts.Info, 'CreateAsset', req.params.command.toLowerCase(), String(body.id), JSON.stringify(body), req.params.collection || '')
+		const result = await gateway.execute('channel1', Chaincodes.Info, Functions.CreateAsset, req.params.command.toLowerCase(), String(body.id), JSON.stringify(body), req.params.collection || '')
 		res.status(200).json({ message: "Item added!", success: true, result });
 	} catch (error) {
 		throw new Error(JSON.stringify(error.details))
@@ -396,7 +406,7 @@ async function write(res, req, body) {
 async function update(res, req, body) {
 	try {
 		const { id, ...data } = body;
-		const result = await gateway.execute('channel1', Contracts.Info, 'UpdateAsset', req.params.command.toLowerCase(), req.params.id.toLowerCase(), JSON.stringify(data), req.params.collection || '')
+		const result = await gateway.execute('channel1', Chaincodes.Info, Functions.UpdateAsset, req.params.command.toLowerCase(), req.params.id.toLowerCase(), JSON.stringify(data), req.params.collection || '')
 		res.status(200).json({ message: "Item updated!", success: true, result });
 	} catch (error) {
 		throw new Error(JSON.stringify(error.details))
@@ -463,7 +473,7 @@ async function update(res, req, body) {
  */
 async function read(res, req) {
 	try {
-		const result = await gateway.query('channel1', Contracts.Info, 'ReadAsset', req.params.command.toLowerCase(), req.params.id, req.params.collection || '')
+		const result = await gateway.query('channel1', Chaincodes.Info, Functions.GetAllAssets, req.params.command.toLowerCase(), req.params.id, req.params.collection || '')
 		res.status(200).json({ message: "Item retrieved!", success: true, result });
 	} catch (error) {
 		throw new Error(JSON.stringify(error.details))
