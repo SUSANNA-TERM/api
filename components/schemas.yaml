@@ -1,0 +1,42 @@
+components:
+  schemas:
+    Meter:
+      type: object
+      properties:
+        id:
+          type: string
+        meter_id:
+          type: integer
+          format: int64
+        type:
+          type: string
+        metertype_id:
+          type: integer
+          format: int64
+        type_id:
+          type: integer
+          format: int64
+        mote:
+          type: string
+        barcode:
+          type: string
+        consumer:
+          type: string
+        provision:
+          type: string
+        lat:
+          type: string
+        lng:
+          type: string
+        address:
+          type: string
+        description:
+          type: string
+        region_id:
+          type: integer
+          format: int64
+        location_id:
+          type: integer
+          format: int64
+        address_name:
+          type: string

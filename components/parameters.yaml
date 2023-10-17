@@ -1,0 +1,15 @@
+components:
+  parameters:
+    collection:
+      name: collection
+      in: path
+      required: true
+      schema:
+        type: string
+    id:
+      name: id
+      in: path
+      required: true
+      description: ID of the item
+      schema:
+        type : string
