@@ -3,40 +3,198 @@ components:
     Meter:
       type: object
       properties:
-        id:
-          type: string
         meter_id:
           type: integer
-          format: int64
+          format: int32
+          description: Unique identifier for the meter
+        id:
+          type: string
+          maxLength: 100
+          description: Additional identifier for the meter
         type:
           type: string
+          nullable: true
+          description: Type of the meter
         metertype_id:
           type: integer
-          format: int64
+          format: int32
+          nullable: true
+          description: Id of the type of the meter
         type_id:
           type: integer
-          format: int64
+          format: int32
+          nullable: true
+          description: Type ID associated with the meter
         mote:
           type: string
+          maxLength: 50
+          nullable: true
+          description: Mote associated with the meter
         barcode:
           type: string
+          maxLength: 50
+          nullable: true
+          description: Barcode of the meter
         consumer:
           type: string
+          maxLength: 50
+          nullable: true
+          description: Consumer information associated with the meter
         provision:
           type: string
+          maxLength: 50
+          nullable: true
+          description: Provision information of the meter
         lat:
           type: string
+          maxLength: 50
+          nullable: true
+          description: Latitude information of the meter
         lng:
           type: string
+          maxLength: 50
+          nullable: true
+          description: Longitude information of the meter
         address:
           type: string
+          maxLength: 100
+          nullable: true
+          description: Address where the meter is located
         description:
           type: string
-        region_id:
-          type: integer
-          format: int64
+          nullable: true
+          description: Description of the meter
         location_id:
           type: integer
-          format: int64
+          format: int32
+          nullable: true
+          description: Id of the location where the meter is
         address_name:
           type: string
+          maxLength: 150
+          nullable: true
+          description: Name of the address where the meter is located
+      required:
+        - meter_id
+        - id
+    Location:
+      type: object
+      properties:
+        location_id:
+          type: integer
+          format: int32
+          description: Unique identifier for the location
+        location_name:
+          type: string
+          maxLength: 100
+          description: Name of the location
+        lat:
+          type: string
+          maxLength: 30
+          nullable: true
+          description: Latitude coordinate of the location
+        lng:
+          type: string
+          maxLength: 30
+          nullable: true
+          description: Longitude coordinate of the location
+        description:
+          type: string
+          format: text
+          nullable: true
+          description: Description or additional information about the location
+        date_insert:
+          type: string
+          format: date-time
+          description: Date and time when the location was inserted into the table
+      required:
+        - location_id
+        - location_name
+        - date_insert
+    MeterStatus:
+      type: object
+      properties:
+        meterstatus_id:
+          type: integer
+          format: int32
+          description: Unique identifier for the meter status
+        meter_id:
+          type: string
+          maxLength: 100
+          nullable: true
+          description: Associated meter ID
+        value:
+          type: number
+          format: double
+          nullable: true
+          description: Value of the meter status
+        voltage:
+          type: integer
+          format: int32
+          nullable: true
+          description: Voltage associated with the meter status
+        temp:
+          type: integer
+          format: int32
+          nullable: true
+          description: Temperature reading of the meter status
+        sensor_date:
+          type: string
+          format: date-time
+          nullable: true
+          description: Sensor date associated with the meter status
+        status:
+          type: integer
+          format: int32
+          nullable: true
+          description: Status of the meter
+        lastval:
+          type: number
+          format: double
+          nullable: true
+          description: Last recorded value for the meter status
+        date_insert:
+          type: string
+          format: date-time
+          nullable: true
+          description: Date and time when the meter status was inserted
+      required:
+        - meterstatus_id
+    MeterType:
+      type: object
+      properties:
+        metertype_id:
+          type: integer
+          format: int32
+          description: Unique identifier for the meter type
+        metertype_name:
+          type: string
+          maxLength: 200
+          description: Name of the meter type
+        capacity:
+          type: integer
+          format: int32
+          nullable: true
+          description: Capacity associated with the meter type
+        dimensions:
+          type: string
+          maxLength: 100
+          nullable: true
+          description: Dimensions of the meter type
+        weight:
+          type: integer
+          format: int32
+          nullable: true
+          description: Weight of the meter type
+        description:
+          type: string
+          nullable: true
+          description: Description of the meter type
+        date_insert:
+          type: string
+          format: date-time
+          description: Date and time when the meter type was inserted into the table
+      required:
+        - metertype_id
+        - metertype_name
+        - date_insert
