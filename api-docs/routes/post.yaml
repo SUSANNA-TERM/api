@@ -1,0 +1,80 @@
+### METER ROUTES ###
+/api/Meters:
+  post:
+    tags:
+      - Meter
+    summary: Writes the given meter in the blockchain
+    requestBody:
+     required: true
+     content:
+       application/json:
+         schema:
+           allOf:
+             - $ref: '#/components/schemas/Meter'
+             - required:
+               - id
+               - meter_id
+               - type
+               - metertype_id
+               - type_id
+               - mote
+               - barcode
+               - consumer
+               - provision
+               - lat
+               - lng
+               - address
+               - description
+               - location_id
+               - address_name
+    responses:
+      '200':
+        $ref: '#/components/responses/Success'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '404':
+        $ref: '#/components/responses/NotFound'
+
+/api/Meters/collections/{collection}:
+  post:
+    tags:
+      - Meter
+    summary: Writes the given meter in a private collection in the blockchain
+    parameters:
+      - $ref: '#/components/parameters/collection'
+    requestBody:
+     required: true
+     content:
+       application/json:
+         schema:
+           allOf:
+             - $ref: '#/components/schemas/Meter'
+             - required:
+               - id
+               - meter_id
+               - type
+               - metertype_id
+               - type_id
+               - mote
+               - barcode
+               - consumer
+               - provision
+               - lat
+               - lng
+               - address
+               - description
+               - region_id
+               - location_id
+               - address_name
+    responses:
+      '200':
+        $ref: '#/components/responses/Success'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '404':
+        $ref: '#/components/responses/NotFound'
+### METER ROUTES ###

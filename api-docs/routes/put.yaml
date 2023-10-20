@@ -1,0 +1,48 @@
+### METER ROUTES ###
+/api/Meters/{id}:
+  put:
+    tags:
+      - Meter
+    summary: Updates the meter with the given ID
+    parameters:
+      - $ref: '#/components/parameters/id'
+    requestBody:
+     required: true
+     content:
+       application/json:
+         schema:
+           $ref: '#/components/schemas/Meter'
+    responses:
+      '200':
+        $ref: '#/components/responses/Success'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '404':
+        $ref: '#/components/responses/NotFound'
+ 
+/api/Meters/{id}/collections/{collection}:
+  put:
+    tags:
+      - Meter
+    summary: Updates the meter that belongs to the specified private collection and corresponds to the given ID
+    parameters:
+      - $ref: '#/components/parameters/id'
+      - $ref: '#/components/parameters/collection'
+    requestBody:
+     required: true
+     content:
+       application/json:
+         schema:
+           $ref: '#/components/schemas/Meter'
+    responses:
+      '200':
+        $ref: '#/components/responses/Success'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '404':
+        $ref: '#/components/responses/NotFound'
+### METER ROUTES ###

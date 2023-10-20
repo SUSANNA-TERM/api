@@ -128,7 +128,7 @@ const options = {
             }
         ]
     },
-    apis: ["components/*", "./https_server.js"],
+    apis: ["api-docs/**/*.yaml", "./https_server.js"],
 };
 
 const specs = swaggerDoc(options);
