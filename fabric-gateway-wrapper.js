@@ -30,7 +30,7 @@ class FabricGateway {
             const signer = signers.newPrivateKeySigner(clientPrivateKey);
             const systemRootCerts = Buffer.from(tls.rootCertificates.join(os.EOL));
             const rootCerts = Buffer.concat([clientTlsCert, systemRootCerts])
-            const identity = { mspId: 'Athenarc', credentials: clientCredentials };
+            const identity = { mspId: 'Zitsa', credentials: clientCredentials };
 
             this.client = new grpc.Client(address, grpc.credentials.createSsl(rootCerts, peerPrivateKey, certChain, false));
             this.gateway = connect({ identity, signer, client: this.client });

@@ -26,11 +26,11 @@ const Functions = {
 }
 
 const credentials = loadCredentials(
-	'/etc/hyperledger/client/athenarc/client/client1/msp/signcerts/cert.pem',
-	'/etc/hyperledger/client/athenarc/client/client1/msp/keystore/key.pem',
-	'/etc/hyperledger/client/tls-chain-cert/tls-ca-cert.pem',
-	'/etc/hyperledger/client/athenarc/peer/ledger1/tls/keystore/key.pem',
-	'/etc/hyperledger/client/athenarc/peer/ledger1/tls/signcerts/cert.pem'
+	'/etc/hyperledger/client/zitsa/client/zitsa_client1/msp/signcerts/cert.pem',
+	'/etc/hyperledger/client/zitsa/client/zitsa_client1/msp/keystore/key.pem',
+	'/etc/hyperledger/client/zitsa/tls-chain-cert/tls-ca-cert.pem',
+	'/etc/hyperledger/client/zitsa/client/zitsa_client1/tls/keystore/key.pem',
+	'/etc/hyperledger/client/zitsa/client/zitsa_client1/tls/signcerts/cert.pem'
 );
 
 const gateway = new FabricGateway('ledger1.drosatos.eu:7051', credentials)
