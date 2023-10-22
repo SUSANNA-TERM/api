@@ -78,3 +78,42 @@
       '404':
         $ref: '#/components/responses/NotFound'
 ### METER ROUTES ###
+
+
+### READINGS ROUTES ###
+/api/Readings/collections/{collection}:
+  post:
+    tags:
+      - Readings
+    summary: Gets all the readings for a specific location and time-frame
+    parameters:
+      - $ref: '#/components/parameters/collection'
+    requestBody:
+     required: true
+     content:
+       application/json:
+         schema:
+           type: object
+           properties:
+             startDate:
+               type: string
+               format: date-time
+               description: Date and time of the start of the time-frame
+             endDate:
+               type: string
+               format: date-time
+               description: Date and time of the end of the time-frame
+             locationId:
+               type: integer
+               format: int32
+               description: Id of the location
+    responses:
+      '200':
+        $ref: '#/components/responses/Success'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '404':
+        $ref: '#/components/responses/NotFound'
+### READINGS ROUTES ###

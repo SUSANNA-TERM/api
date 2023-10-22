@@ -18,7 +18,8 @@ const IDMapper = {
 }
 
 const Chaincodes = {
-	Info: 'Info'
+	Info: 'Info',
+	Readings: 'Readings'
 };
 
 const Functions = {
@@ -28,7 +29,8 @@ const Functions = {
 	DeleteAsset: 'Asset:DeleteAsset',
 	AssetExists: 'Asset:AssetExists',
 	GetAllAssets: 'Asset:GetAllAssets',
-	GetAllMeters: 'Info:GetAllMeters'
+	GetAllMeters: 'Info:GetAllMeters',
+	Query: 'Readings:Query'
 }
 
 const credentials = loadCredentials(
@@ -250,7 +252,8 @@ async function post_command_controller(command, req, res) {
 		'meters': write,
 		'locations': write,
 		'metertypes': write,
-		'meterstatuses': write
+		'meterstatuses': write,
+		'readings': readingsByRange
 	};
 
 	await command_controller(commands, command, req, res);
@@ -333,6 +336,27 @@ async function read(res, req) {
 			result = await gateway.query('channel1', Chaincodes.Info, Functions.GetAllAssets, req.params.command.toLowerCase(), req.params.collection || '')
 		}
 		res.status(200).json({ message: "Item retrieved!", success: true, result });
+	} catch (error) {
+		throw error
+	}
+}
+
+
+async function readingsByRange(res, req, body) {
+	try {
+		const { startDate, endDate, locationId } = body;
+		const queryString = JSON.stringify({
+			"selector": {
+				"sensorDate": {
+					"$gte": startDate,
+					"$lte": endDate
+				},
+				"location_id": locationId
+			}
+		});
+
+		const result = await gateway.execute('channel1', Chaincodes.Readings, Functions.Query, queryString, req.params.collection || '')
+		res.status(200).json({ message: "Item updated!", success: true, result });
 	} catch (error) {
 		throw error
 	}
