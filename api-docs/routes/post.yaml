@@ -9,24 +9,7 @@
      content:
        application/json:
          schema:
-           allOf:
-             - $ref: '#/components/schemas/Meter'
-             - required:
-               - id
-               - meter_id
-               - type
-               - metertype_id
-               - type_id
-               - mote
-               - barcode
-               - consumer
-               - provision
-               - lat
-               - lng
-               - address
-               - description
-               - location_id
-               - address_name
+           $ref: '#/components/schemas/Meter'
     responses:
       '200':
         $ref: '#/components/responses/Success'
@@ -49,25 +32,7 @@
      content:
        application/json:
          schema:
-           allOf:
-             - $ref: '#/components/schemas/Meter'
-             - required:
-               - id
-               - meter_id
-               - type
-               - metertype_id
-               - type_id
-               - mote
-               - barcode
-               - consumer
-               - provision
-               - lat
-               - lng
-               - address
-               - description
-               - region_id
-               - location_id
-               - address_name
+           $ref: '#/components/schemas/Meter'
     responses:
       '200':
         $ref: '#/components/responses/Success'
@@ -78,6 +43,53 @@
       '404':
         $ref: '#/components/responses/NotFound'
 ### METER ROUTES ###
+
+
+### METER_STATUS ROUTES ##
+/api/MeterStatuses:
+  post:
+    tags:
+      - MeterStatus
+    summary: Writes the given meter status in the blockchain
+    requestBody:
+     required: true
+     content:
+       application/json:
+         schema:
+           $ref: '#/components/schemas/MeterStatus'
+    responses:
+      '200':
+        $ref: '#/components/responses/Success'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '404':
+        $ref: '#/components/responses/NotFound'
+
+/api/MeterStatuses/collections/{collection}:
+  post:
+    tags:
+      - MeterStatus
+    summary: Writes the given meter status in a private collection in the blockchain
+    parameters:
+      - $ref: '#/components/parameters/collection'
+    requestBody:
+     required: true
+     content:
+       application/json:
+         schema:
+           $ref: '#/components/schemas/MeterStatus'
+    responses:
+      '200':
+        $ref: '#/components/responses/Success'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '404':
+        $ref: '#/components/responses/NotFound'
+### METER_STATUS ROUTES ###
 
 
 ### READINGS ROUTES ###

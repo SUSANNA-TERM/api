@@ -96,3 +96,73 @@
       '404':
         $ref: '#/components/responses/NotFound'
 ### METER ROUTES ###
+
+
+### METER_STATUS ROUTES ###
+/api/MeterStatuses:
+  get:
+    tags:
+      - MeterStatus
+    summary: Returns all the meter statuses
+    responses:
+      '200':
+        $ref: '#/components/responses/Success'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '404':
+        $ref: '#/components/responses/NotFound'
+
+/api/MeterStatuses/{id}:
+  get:
+    tags:
+      - MeterStatus
+    summary: Returns a meter status by ID
+    parameters:
+      - $ref: '#/components/parameters/id'
+    responses:
+      '200':
+        $ref: '#/components/responses/Success'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '404':
+        $ref: '#/components/responses/NotFound'
+
+/api/MeterStatuses/collections/{collection}:
+  get:
+    tags:
+      - MeterStatus
+    summary: Returns all the meter statuses of a private collection
+    parameters:
+      - $ref: '#/components/parameters/collection'
+    responses:
+      '200':
+        $ref: '#/components/responses/Success'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '404':
+        $ref: '#/components/responses/NotFound'
+
+/api/MeterStatuses/{id}/collections/{collection}:
+  get:
+    tags:
+      - MeterStatus
+    summary: Returns the meter status that belongs to the specified private collection and corresponds to the given ID
+    parameters:
+      - $ref: '#/components/parameters/id'
+      - $ref: '#/components/parameters/collection'
+    responses:
+      '200':
+        $ref: '#/components/responses/Success'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '404':
+        $ref: '#/components/responses/NotFound'
+### METER_STATUS ROUTES ###
