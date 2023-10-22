@@ -344,14 +344,14 @@ async function read(res, req) {
 
 async function readingsByRange(res, req, body) {
 	try {
-		const { startDate, endDate, locationId } = body;
+		const { start_date, end_date, location_id } = body;
 		const queryString = JSON.stringify({
 			"selector": {
-				"sensorDate": {
-					"$gte": startDate,
-					"$lte": endDate
+				"sensor_date": {
+					"$gte": start_date,
+					"$lte": end_date
 				},
-				"location_id": locationId
+				"location_id": location_id
 			}
 		});
 

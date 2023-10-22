@@ -107,18 +107,21 @@
          schema:
            type: object
            properties:
-             startDate:
+             start_date:
                type: string
                format: date-time
                description: Date and time of the start of the time-frame
-             endDate:
+             end_date:
                type: string
                format: date-time
                description: Date and time of the end of the time-frame
-             locationId:
+             location_id:
                type: integer
                format: int32
                description: Id of the location
+           required:
+             - meter_id
+             - id
     responses:
       '200':
         $ref: '#/components/responses/Success'
