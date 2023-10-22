@@ -11,6 +11,12 @@ const hostname = '0.0.0.0';
 const port = 8888;
 const key = '12345';
 
+const IDMapper = {
+	meterstatuses(req) {
+		return req.body.meterstatus_id;
+	}
+}
+
 const Chaincodes = {
 	Info: 'Info'
 };
@@ -243,7 +249,8 @@ async function post_command_controller(command, req, res) {
 	const commands = {
 		'meters': write,
 		'locations': write,
-		'metertypes': write
+		'metertypes': write,
+		'meterstatuses': write
 	};
 
 	await command_controller(commands, command, req, res);
@@ -253,7 +260,8 @@ async function put_command_controller(command, req, res) {
 	const commands = {
 		'meters': update,
 		'locations': update,
-		'metertypes': update
+		'metertypes': update,
+		'meterstatuses': update
 	};
 
 	await command_controller(commands, command, req, res);
@@ -263,7 +271,8 @@ async function get_command_controller(command, req, res) {
 	const commands = {
 		'meters': read,
 		'locations': read,
-		'metertypes': read
+		'metertypes': read,
+		'meterstatuses': read
 	};
 
 	await command_controller(commands, command, req, res);
@@ -286,7 +295,14 @@ async function command_controller(commands, command, req, res) {
 
 async function write(res, req, body) {
 	try {
-		const result = await gateway.execute('channel1', Chaincodes.Info, Functions.CreateAsset, req.params.command.toLowerCase(), String(body.id), JSON.stringify(body), req.params.collection || '')
+		let { command, id, collection } = req.params;
+		command = req.params.command.toLowerCase();
+
+		if (IDMapper.hasOwnProperty(command)) {
+			id = IDMapper[command](req);
+		}
+
+		const result = await gateway.execute('channel1', Chaincodes.Info, Functions.CreateAsset, command, String(id), JSON.stringify(body), collection || '')
 		res.status(200).json({ message: "Item added!", success: true, result });
 	} catch (error) {
 		throw error
