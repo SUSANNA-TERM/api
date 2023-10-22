@@ -241,7 +241,9 @@ app.use((err, req, res, next) => {
 
 async function post_command_controller(command, req, res) {
 	const commands = {
-		'meters': write
+		'meters': write,
+		'locations': write,
+		'metertypes': write
 	};
 
 	await command_controller(commands, command, req, res);
@@ -249,7 +251,9 @@ async function post_command_controller(command, req, res) {
 
 async function put_command_controller(command, req, res) {
 	const commands = {
-		'meters': update
+		'meters': update,
+		'locations': update,
+		'metertypes': update
 	};
 
 	await command_controller(commands, command, req, res);
@@ -257,7 +261,9 @@ async function put_command_controller(command, req, res) {
 
 async function get_command_controller(command, req, res) {
 	const commands = {
-		'meters': read
+		'meters': read,
+		'locations': read,
+		'metertypes': read
 	};
 
 	await command_controller(commands, command, req, res);
