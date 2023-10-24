@@ -14,6 +14,15 @@ const key = '12345';
 const IDMapper = {
 	meterstatuses(req) {
 		return req.body.meterstatus_id;
+	},
+	meters(req) {
+		return req.body.meter_id;
+	},
+	metertypes(req) {
+		return req.body.metertype_id;
+	},
+	locations(req) {
+		return req.body.location_id;
 	}
 }
 
