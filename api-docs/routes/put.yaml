@@ -46,3 +46,55 @@
       '404':
         $ref: '#/components/responses/NotFound'
 ### METER ROUTES ###
+
+
+### METER_TYPE ROUTES ##
+/api/MeterTypes/{id}:
+  put:
+    tags:
+      - MeterType
+    summary: Updates the location with the given ID
+    parameters:
+      - $ref: '#/components/parameters/id'
+    requestBody:
+     required: true
+     content:
+       application/json:
+         schema:
+           $ref: '#/components/schemas/MeterType'
+    responses:
+      '200':
+        $ref: '#/components/responses/Success'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '404':
+        $ref: '#/components/responses/NotFound'
+### METER_TYPE ROUTES ###
+
+
+### LOCATION ROUTES ##
+/api/Locations/{id}:
+  put:
+    tags:
+      - Location
+    summary: Updates the location with the given ID
+    parameters:
+      - $ref: '#/components/parameters/id'
+    requestBody:
+     required: true
+     content:
+       application/json:
+         schema:
+           $ref: '#/components/schemas/Location'
+    responses:
+      '200':
+        $ref: '#/components/responses/Success'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '404':
+        $ref: '#/components/responses/NotFound'
+### LOCATION ROUTES ###

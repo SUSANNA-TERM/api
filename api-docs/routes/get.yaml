@@ -166,3 +166,73 @@
       '404':
         $ref: '#/components/responses/NotFound'
 ### METER_STATUS ROUTES ###
+
+
+### METER_TYPE ROUTES ###
+/api/MeterTypes:
+  get:
+    tags:
+      - MeterType
+    summary: Returns all the meter types
+    responses:
+      '200':
+        $ref: '#/components/responses/Success'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '404':
+        $ref: '#/components/responses/NotFound'
+
+/api/MeterTypes/{id}:
+  get:
+    tags:
+      - MeterType
+    summary: Returns a meter type by ID
+    parameters:
+      - $ref: '#/components/parameters/id'
+    responses:
+      '200':
+        $ref: '#/components/responses/Success'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '404':
+        $ref: '#/components/responses/NotFound'
+### METER_TYPE ROUTES ###
+
+
+### LOCATION ROUTES ###
+/api/Locations:
+  get:
+    tags:
+      - Location
+    summary: Returns all the locations
+    responses:
+      '200':
+        $ref: '#/components/responses/Success'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '404':
+        $ref: '#/components/responses/NotFound'
+
+/api/Locations/{id}:
+  get:
+    tags:
+      - Location
+    summary: Returns a location by ID
+    parameters:
+      - $ref: '#/components/parameters/id'
+    responses:
+      '200':
+        $ref: '#/components/responses/Success'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '404':
+        $ref: '#/components/responses/NotFound'
+### LOCATION ROUTES ###

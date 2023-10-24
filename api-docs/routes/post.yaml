@@ -92,6 +92,54 @@
 ### METER_STATUS ROUTES ###
 
 
+### METER_TYPE ROUTES ##
+/api/MeterTypes:
+  post:
+    tags:
+      - MeterType
+    summary: Writes the given meter type in the blockchain
+    requestBody:
+     required: true
+     content:
+       application/json:
+         schema:
+           $ref: '#/components/schemas/MeterType'
+    responses:
+      '200':
+        $ref: '#/components/responses/Success'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '404':
+        $ref: '#/components/responses/NotFound'
+### METER_TYPE ROUTES ###
+
+
+### LOCATION ROUTES ##
+/api/Locations:
+  post:
+    tags:
+      - Location
+    summary: Writes the given location in the blockchain
+    requestBody:
+     required: true
+     content:
+       application/json:
+         schema:
+           $ref: '#/components/schemas/Location'
+    responses:
+      '200':
+        $ref: '#/components/responses/Success'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '404':
+        $ref: '#/components/responses/NotFound'
+### LOCATION ROUTES ###
+
+
 ### READINGS ROUTES ###
 /api/Readings/collections/{collection}:
   post:

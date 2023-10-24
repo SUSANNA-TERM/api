@@ -100,7 +100,6 @@ components:
           description: Longitude coordinate of the location
         description:
           type: string
-          format: text
           nullable: true
           description: Description or additional information about the location
         date_insert:
