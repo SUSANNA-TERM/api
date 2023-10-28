@@ -152,6 +152,11 @@ components:
           format: double
           nullable: true
           description: Last recorded value for the meter status
+        location_id:
+          type: integer
+          format: int32
+          nullable: true
+          description: Id of the location of the associated meter
         date_insert:
           type: string
           format: date-time
