@@ -28,7 +28,8 @@ const IDMapper = {
 
 const Chaincodes = {
 	Info: 'Info',
-	Readings: 'Readings'
+	Readings: 'Readings',
+	ReadingsBridge: 'ReadingsBridge'
 };
 
 const Functions = {
@@ -39,7 +40,8 @@ const Functions = {
 	AssetExists: 'Asset:AssetExists',
 	GetAllAssets: 'Asset:GetAllAssets',
 	GetAllMeters: 'Info:GetAllMeters',
-	Query: 'Readings:Query'
+	Query: 'Readings:Query',
+	ProcessMeterStatus: 'ReadingsBridge:ProcessMeterStatus'
 }
 
 const credentials = loadCredentials(
@@ -261,7 +263,7 @@ async function post_command_controller(command, req, res) {
 		'meters': write,
 		'locations': write,
 		'metertypes': write,
-		'meterstatuses': write,
+		'meterstatuses': writeMeterStatuses,
 		'readings': readingsByRange
 	};
 
@@ -308,7 +310,7 @@ async function command_controller(commands, command, req, res) {
 async function write(res, req, body) {
 	try {
 		let { command, id, collection } = req.params;
-		command = req.params.command.toLowerCase();
+		command = command.toLowerCase();
 
 		if (IDMapper.hasOwnProperty(command)) {
 			id = IDMapper[command](req);
@@ -366,6 +368,23 @@ async function readingsByRange(res, req, body) {
 
 		const result = await gateway.execute('channel1', Chaincodes.Readings, Functions.Query, queryString, req.params.collection || '')
 		res.status(200).json({ message: "Item updated!", success: true, result });
+	} catch (error) {
+		throw error
+	}
+}
+
+async function writeMeterStatuses(res, req, body) {
+	try {
+		let { command, id } = req.params;
+		command = command.toLowerCase();
+
+		if (IDMapper.hasOwnProperty(command)) {
+			id = IDMapper[command](req);
+		}
+
+		const processedMeterStatus = await gateway.execute('channel2', Chaincodes.ReadingsBridge, Functions.ProcessMeterStatus, JSON.stringify(body), 'collection1')
+		const result = await gateway.execute('channel1', Chaincodes.Readings, Functions.CreateAsset, command, String(id), JSON.stringify(processedMeterStatus), 'collection1')
+		res.status(200).json({ message: "Meter status added!", success: true, result });
 	} catch (error) {
 		throw error
 	}
