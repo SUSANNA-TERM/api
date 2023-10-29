@@ -215,3 +215,20 @@
       '404':
         $ref: '#/components/responses/NotFound'
 ### READINGS ROUTES ###
+
+### METER STATS ROUTES ###
+/api/MeterStats:
+  post:
+    tags:
+      - MeterStat
+    summary: Writes statistics regarding the daily consumption of a location
+    responses:
+      '200':
+        $ref: '#/components/responses/Success'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '404':
+        $ref: '#/components/responses/NotFound'
+### METER STATS ROUTES ###

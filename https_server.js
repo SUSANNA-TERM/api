@@ -29,7 +29,8 @@ const IDMapper = {
 const Chaincodes = {
 	Info: 'Info',
 	Readings: 'Readings',
-	ReadingsBridge: 'ReadingsBridge'
+	ReadingsBridge: 'ReadingsBridge',
+	MeterStats: 'MeterStats'
 };
 
 const Functions = {
@@ -42,7 +43,8 @@ const Functions = {
 	GetAllMeters: 'Info:GetAllMeters',
 	ReadingsQuery: 'Readings:Query',
 	ReadingsBridgeQuery: 'ReadingsBridge:Query',
-	ProcessMeterStatus: 'ReadingsBridge:ProcessMeterStatus'
+	ProcessMeterStatus: 'ReadingsBridge:ProcessMeterStatus',
+	MeterStatusesToMeters: 'ReadingsBridge:MeterStatusesToMeters'
 }
 
 const credentials = loadCredentials(
@@ -293,7 +295,8 @@ async function post_command_controller(command, req, res) {
 		'locations': write,
 		'metertypes': write,
 		'meterstatuses': writeMeterStatuses,
-		'readings': readingsByRange
+		'readings': readingsByRange,
+		'meterstats': writeMeterStats
 	};
 
 	await command_controller(commands, command, req, res);
@@ -414,6 +417,49 @@ async function writeMeterStatuses(res, req, body) {
 		const processedMeterStatus = await gateway.execute('channel2', Chaincodes.ReadingsBridge, Functions.ProcessMeterStatus, JSON.stringify(body), 'collection1')
 		const result = await gateway.execute('channel1', Chaincodes.Readings, Functions.CreateAsset, command, String(id), JSON.stringify(processedMeterStatus), 'collection1')
 		res.status(200).json({ message: "Meter status added!", success: true, result });
+	} catch (error) {
+		throw error
+	}
+}
+
+async function writeMeterStats(res, req, body) {
+	try {
+		const queryString = JSON.stringify({
+			"selector": {
+				"sensor_date": {
+					"$gte": new Date(new Date().setHours(0, 0, 0)),
+					"$lte": new Date(new Date().setHours(23, 59, 59))
+				}
+			}
+		});
+
+		// get today's meter statuses
+		const meterStatuses = await gateway.query('channel1', Chaincodes.Readings, Functions.ReadingsQuery, queryString, 'collection1')
+
+		// group meter statuses and consumption by location
+		const location = {};
+		for (const { location_id, consumption, meterstatus_id } of meterStatuses) {
+			if (!location[location_id]) {
+				location[location_id] = { meterStatuses: [], consumption: 0 };
+			}
+			location[location_id].consumption += consumption;
+			location[location_id].meterStatuses.push({ meterstatus_id });
+		}
+
+		// write meter stat for each location
+		const meterStats = []
+		for (const location_id in location) {
+			const meterStat = {
+				location_id,
+				id: new Date().getTime(),
+				date_insert: new Date(),
+				total_consumption: location[location_id].consumption,
+				total_meters: (await gateway.query('channel2', Chaincodes.ReadingsBridge, Functions.MeterStatusesToMeters, JSON.stringify(location[location_id].meterStatuses), 'collection1')).length
+			}
+			meterStats.push(await gateway.execute('channel1', Chaincodes.MeterStats, Functions.CreateAsset, 'meterstats', String(meterStat.id), JSON.stringify(meterStat), 'collection1'));
+		}
+
+		res.status(200).json({ message: "Meter stats added!", success: true, result: meterStats });
 	} catch (error) {
 		throw error
 	}
