@@ -125,6 +125,10 @@ const options = {
             {
                 url: "https://ledger1.drosatos.eu:8888",
                 description: "Test server"
+            },
+            {
+                url: "https://localhost:8888",
+                description: "Localhost server"
             }
         ]
     },
