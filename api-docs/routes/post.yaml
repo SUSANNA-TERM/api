@@ -42,6 +42,41 @@
         $ref: '#/components/responses/Unauthorized'
       '404':
         $ref: '#/components/responses/NotFound'
+
+/api/Meters/{id}/consumption:
+  post:
+    tags:
+      - Meter
+    summary: Calculates the total consupmtion for a specific meter and time-frame
+    parameters:
+      - $ref: '#/components/parameters/id'
+    requestBody:
+     required: true
+     content:
+       application/json:
+         schema:
+           type: object
+           properties:
+             start_date:
+               type: string
+               format: date-time
+               description: Date and time of the start of the time-frame
+             end_date:
+               type: string
+               format: date-time
+               description: Date and time of the end of the time-frame
+           required:
+             - start_date
+             - end_date
+    responses:
+      '200':
+        $ref: '#/components/responses/Success'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '404':
+        $ref: '#/components/responses/NotFound'
 ### METER ROUTES ###
 
 
@@ -168,8 +203,8 @@
                format: int32
                description: Id of the location
            required:
-             - meter_id
-             - id
+             - start_date
+             - end_date
     responses:
       '200':
         $ref: '#/components/responses/Success'

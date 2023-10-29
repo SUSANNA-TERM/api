@@ -40,7 +40,8 @@ const Functions = {
 	AssetExists: 'Asset:AssetExists',
 	GetAllAssets: 'Asset:GetAllAssets',
 	GetAllMeters: 'Info:GetAllMeters',
-	Query: 'Readings:Query',
+	ReadingsQuery: 'Readings:Query',
+	ReadingsBridgeQuery: 'ReadingsBridge:Query',
 	ProcessMeterStatus: 'ReadingsBridge:ProcessMeterStatus'
 }
 
@@ -148,6 +149,34 @@ app.post('/api', async (req, res, next) => {
 		} else {
 			res.status(400).json({ "result": "Command parameter is missing!", "success": false });
 		}
+	} catch (error) {
+		next(error);
+	}
+});
+
+// POST URL TO RETRIEVE THE TOTAL CONSUMPTION OF A METER FOR A TIME FRAME
+app.post('/api/Meters/:id/consumption', async (req, res, next) => {
+	try {
+		const { start_date, end_date } = req.body;
+		const queryString = JSON.stringify({
+			"selector": {
+				"sensor_date": {
+					"$gt": start_date,
+					"$lte": end_date
+				},
+				"meter_id": req.params.id
+			}
+		});
+
+		const result = await gateway.execute('channel2', Chaincodes.ReadingsBridge, Functions.ReadingsBridgeQuery, queryString, 'collection1')
+		res.status(200).json({ 
+			message: "Total consumption calculated!",
+			success: true,
+			result: {
+				consumption: result.reduce((sum, reading) => sum + reading.consumption, 0),
+				readings: result
+			}
+		});
 	} catch (error) {
 		next(error);
 	}
@@ -366,7 +395,7 @@ async function readingsByRange(res, req, body) {
 			}
 		});
 
-		const result = await gateway.execute('channel1', Chaincodes.Readings, Functions.Query, queryString, req.params.collection || '')
+		const result = await gateway.execute('channel1', Chaincodes.Readings, Functions.ReadingsQuery, queryString, req.params.collection || '')
 		res.status(200).json({ message: "Item updated!", success: true, result });
 	} catch (error) {
 		throw error
