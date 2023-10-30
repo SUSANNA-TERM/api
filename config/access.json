@@ -1,0 +1,21 @@
+[
+    {
+        "scope": [
+            "zitsa"
+        ],
+        "resource": "/api/.*",
+        "access": [
+            "read",
+            "write"
+        ]
+    },
+    {
+        "scope": [
+            "gov"
+        ],
+        "resource": "/api/Readings/.*",
+        "access": [
+            "write"
+        ]
+    }
+]

@@ -2,6 +2,10 @@ const fs = require('fs');
 const https = require('https');
 const { swagger, openAPIValidator } = require('./swagger');
 const { FabricGateway, loadCredentials } = require('./fabric-gateway-wrapper');
+const config = require('./config/config.json');
+const permissions = require('./config/access.json');
+
+const HTTP_WRITE_METHOD_REGEXP = /^\b(POST|PUT|PATCH|DELETE)\b$/i;
 
 // Import the express module
 const express = require("express");
@@ -9,7 +13,6 @@ const express = require("express");
 const app = express();
 const hostname = '0.0.0.0';
 const port = 8888;
-const key = '12345';
 
 const IDMapper = {
 	meterstatuses(req) {
@@ -57,10 +60,24 @@ const credentials = loadCredentials(
 
 const gateway = new FabricGateway('ledger1.drosatos.eu:7051', credentials)
 
-// middleware that handles authorization
+// middleware that handles authorization and access control
 const checkAuthorization = (req, res, next) => {
-	if (key !== req.headers["authorization"]) {
+	const key = req.headers["authorization"]
+	const group = config.apiKeys[key];
+	
+	if (!group) {
 		return res.status(401).json({ "result": "Unauthorized attempt!", "success": false });
+	}
+
+	const hasAccess = permissions.some(permission => 
+		permission.scope.includes(group) &&
+		new RegExp(permission.resource).test(req.path) &&
+		((permission.access.includes('read') && req.method === 'GET') ||
+		(permission.access.includes('write') && HTTP_WRITE_METHOD_REGEXP.test(req.method)))
+	);
+
+	if (!hasAccess) {
+		return res.status(403).send({ "result": "Forbidden!", "success": false });
 	}
 	next();
 };
