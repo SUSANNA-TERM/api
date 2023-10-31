@@ -17,6 +17,8 @@
         $ref: '#/components/responses/BadRequest'
       '401':
         $ref: '#/components/responses/Unauthorized'
+      '403':
+        $ref: '#/components/responses/Forbidden'
       '404':
         $ref: '#/components/responses/NotFound'
 
@@ -40,6 +42,8 @@
         $ref: '#/components/responses/BadRequest'
       '401':
         $ref: '#/components/responses/Unauthorized'
+      '403':
+        $ref: '#/components/responses/Forbidden'
       '404':
         $ref: '#/components/responses/NotFound'
 
@@ -75,6 +79,8 @@
         $ref: '#/components/responses/BadRequest'
       '401':
         $ref: '#/components/responses/Unauthorized'
+      '403':
+        $ref: '#/components/responses/Forbidden'
       '404':
         $ref: '#/components/responses/NotFound'
 ### METER ROUTES ###
@@ -99,6 +105,8 @@
         $ref: '#/components/responses/BadRequest'
       '401':
         $ref: '#/components/responses/Unauthorized'
+      '403':
+        $ref: '#/components/responses/Forbidden'
       '404':
         $ref: '#/components/responses/NotFound'
 
@@ -122,6 +130,8 @@
         $ref: '#/components/responses/BadRequest'
       '401':
         $ref: '#/components/responses/Unauthorized'
+      '403':
+        $ref: '#/components/responses/Forbidden'
       '404':
         $ref: '#/components/responses/NotFound'
 ### METER_STATUS ROUTES ###
@@ -146,6 +156,8 @@
         $ref: '#/components/responses/BadRequest'
       '401':
         $ref: '#/components/responses/Unauthorized'
+      '403':
+        $ref: '#/components/responses/Forbidden'
       '404':
         $ref: '#/components/responses/NotFound'
 ### METER_TYPE ROUTES ###
@@ -170,6 +182,8 @@
         $ref: '#/components/responses/BadRequest'
       '401':
         $ref: '#/components/responses/Unauthorized'
+      '403':
+        $ref: '#/components/responses/Forbidden'
       '404':
         $ref: '#/components/responses/NotFound'
 ### LOCATION ROUTES ###
@@ -212,6 +226,8 @@
         $ref: '#/components/responses/BadRequest'
       '401':
         $ref: '#/components/responses/Unauthorized'
+      '403':
+        $ref: '#/components/responses/Forbidden'
       '404':
         $ref: '#/components/responses/NotFound'
 ### READINGS ROUTES ###
@@ -229,6 +245,8 @@
         $ref: '#/components/responses/BadRequest'
       '401':
         $ref: '#/components/responses/Unauthorized'
+      '403':
+        $ref: '#/components/responses/Forbidden'
       '404':
         $ref: '#/components/responses/NotFound'
 ### METER STATS ROUTES ###

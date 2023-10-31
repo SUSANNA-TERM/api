@@ -106,6 +106,24 @@ const options = {
                             }
                         }
                     }
+                },
+                Forbidden: {
+                    description: "forbidden",
+                    content: {
+                        "application/json": {
+                            schema: {
+                                type: "object",
+                                properties: {
+                                    result: { type: "string" },
+                                    success: { type: "boolean" },
+                                },
+                                example: {
+                                    result: "Forbidden!",
+                                    success: false,
+                                }
+                            }
+                        }
+                    }
                 }
             },
             securitySchemes: {
