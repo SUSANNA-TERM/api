@@ -35,45 +35,6 @@
       '404':
         $ref: '#/components/responses/NotFound'
 
-/api/Meters/collections/{collection}:
-  get:
-    tags:
-      - Meter
-    summary: Returns all the meters of a private collection
-    parameters:
-      - $ref: '#/components/parameters/collection'
-    responses:
-      '200':
-        $ref: '#/components/responses/Success'
-      '400':
-        $ref: '#/components/responses/BadRequest'
-      '401':
-        $ref: '#/components/responses/Unauthorized'
-      '403':
-        $ref: '#/components/responses/Forbidden'
-      '404':
-        $ref: '#/components/responses/NotFound'
-
-/api/Meters/{id}/collections/{collection}:
-  get:
-    tags:
-      - Meter
-    summary: Returns the meter that belongs to the specified private collection and corresponds to the given ID
-    parameters:
-      - $ref: '#/components/parameters/id'
-      - $ref: '#/components/parameters/collection'
-    responses:
-      '200':
-        $ref: '#/components/responses/Success'
-      '400':
-        $ref: '#/components/responses/BadRequest'
-      '401':
-        $ref: '#/components/responses/Unauthorized'
-      '403':
-        $ref: '#/components/responses/Forbidden'
-      '404':
-        $ref: '#/components/responses/NotFound'
-
 /api/Meters/concise:
  get:
    tags:
@@ -90,23 +51,6 @@
        $ref: '#/components/responses/Forbidden'
      '404':
        $ref: '#/components/responses/NotFound'
-
-/api/Meters/concise/collections/{collection}:
-  get:
-    tags:
-      - Meter
-    summary: Returns the ids and addresses of all the recorded meters of the specified private collection
-    responses:
-      '200':
-        $ref: '#/components/responses/Success'
-      '400':
-        $ref: '#/components/responses/BadRequest'
-      '401':
-        $ref: '#/components/responses/Unauthorized'
-      '403':
-        $ref: '#/components/responses/Forbidden'
-      '404':
-        $ref: '#/components/responses/NotFound'
 ### METER ROUTES ###
 
 
@@ -135,45 +79,6 @@
     summary: Returns a meter status by ID
     parameters:
       - $ref: '#/components/parameters/id'
-    responses:
-      '200':
-        $ref: '#/components/responses/Success'
-      '400':
-        $ref: '#/components/responses/BadRequest'
-      '401':
-        $ref: '#/components/responses/Unauthorized'
-      '403':
-        $ref: '#/components/responses/Forbidden'
-      '404':
-        $ref: '#/components/responses/NotFound'
-
-/api/MeterStatuses/collections/{collection}:
-  get:
-    tags:
-      - MeterStatus
-    summary: Returns all the meter statuses of a private collection
-    parameters:
-      - $ref: '#/components/parameters/collection'
-    responses:
-      '200':
-        $ref: '#/components/responses/Success'
-      '400':
-        $ref: '#/components/responses/BadRequest'
-      '401':
-        $ref: '#/components/responses/Unauthorized'
-      '403':
-        $ref: '#/components/responses/Forbidden'
-      '404':
-        $ref: '#/components/responses/NotFound'
-
-/api/MeterStatuses/{id}/collections/{collection}:
-  get:
-    tags:
-      - MeterStatus
-    summary: Returns the meter status that belongs to the specified private collection and corresponds to the given ID
-    parameters:
-      - $ref: '#/components/parameters/id'
-      - $ref: '#/components/parameters/collection'
     responses:
       '200':
         $ref: '#/components/responses/Success'

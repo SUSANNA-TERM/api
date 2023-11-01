@@ -22,31 +22,6 @@
       '404':
         $ref: '#/components/responses/NotFound'
 
-/api/Meters/collections/{collection}:
-  post:
-    tags:
-      - Meter
-    summary: Writes the given meter in a private collection in the blockchain
-    parameters:
-      - $ref: '#/components/parameters/collection'
-    requestBody:
-     required: true
-     content:
-       application/json:
-         schema:
-           $ref: '#/components/schemas/Meter'
-    responses:
-      '200':
-        $ref: '#/components/responses/Success'
-      '400':
-        $ref: '#/components/responses/BadRequest'
-      '401':
-        $ref: '#/components/responses/Unauthorized'
-      '403':
-        $ref: '#/components/responses/Forbidden'
-      '404':
-        $ref: '#/components/responses/NotFound'
-
 /api/Meters/{id}/consumption:
   post:
     tags:
@@ -92,31 +67,6 @@
     tags:
       - MeterStatus
     summary: Writes the given meter status in the blockchain
-    requestBody:
-     required: true
-     content:
-       application/json:
-         schema:
-           $ref: '#/components/schemas/MeterStatus'
-    responses:
-      '200':
-        $ref: '#/components/responses/Success'
-      '400':
-        $ref: '#/components/responses/BadRequest'
-      '401':
-        $ref: '#/components/responses/Unauthorized'
-      '403':
-        $ref: '#/components/responses/Forbidden'
-      '404':
-        $ref: '#/components/responses/NotFound'
-
-/api/MeterStatuses/collections/{collection}:
-  post:
-    tags:
-      - MeterStatus
-    summary: Writes the given meter status in a private collection in the blockchain
-    parameters:
-      - $ref: '#/components/parameters/collection'
     requestBody:
      required: true
      content:
@@ -190,13 +140,11 @@
 
 
 ### READINGS ROUTES ###
-/api/Readings/collections/{collection}:
+/api/Readings:
   post:
     tags:
       - Readings
     summary: Gets all the readings for a specific location and time-frame
-    parameters:
-      - $ref: '#/components/parameters/collection'
     requestBody:
      required: true
      content:

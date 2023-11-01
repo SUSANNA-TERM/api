@@ -50,6 +50,16 @@ const Functions = {
 	MeterStatusesToMeters: 'ReadingsBridge:MeterStatusesToMeters'
 }
 
+const Collections = {
+	meters: 'collection1',
+	locations: '',
+	metertypes: 'collection2',
+	meterstatuses: '',
+	readings: '',
+	meterstats: '',
+	metertometerstatus: 'collection3'
+}
+
 const credentials = loadCredentials(
 	'/etc/hyperledger/client/zitsa/client/zitsa_client1/msp/signcerts/cert.pem',
 	'/etc/hyperledger/client/zitsa/client/zitsa_client1/msp/keystore/key.pem',
@@ -120,59 +130,6 @@ https.createServer(
     console.log("Server listening on https://"+hostname+":"+port+"/");
   });
 
-
-/**
- * @swagger
- *
- * /api:
- *  post:
- *    tags:
- *      - API
- *    summary: Executes a command
- *    requestBody:
- *     required: true
- *     content:
- *       application/json:
- *         schema:
- *           type: object
- *           properties:
- *             command:
- *               type: string
- *             id:
- *               type: integer
- *             data:
- *               type: string
- *           required:
- *             - id
- *             - command
- *           example:
- *             command: write
- *             id: 1
- *             data: some data
- *    responses:
- *      '200':
- *        $ref: '#/components/responses/Success'
- *      '400':
- *        $ref: '#/components/responses/BadRequest'
- *      '401':
- *        $ref: '#/components/responses/Unauthorized'
- *      '404':
- *        $ref: '#/components/responses/NotFound'
- */
-// STATIC API URL
-app.post('/api', async (req, res, next) => {
-	try {
-		const command = req.body["command"];
-		if (typeof command !== 'undefined' && command) {
-			await post_command_controller(command.toLowerCase(), req, res);
-		} else {
-			res.status(400).json({ "result": "Command parameter is missing!", "success": false });
-		}
-	} catch (error) {
-		next(error);
-	}
-});
-
 // POST URL TO RETRIEVE THE TOTAL CONSUMPTION OF A METER FOR A TIME FRAME
 app.post('/api/Meters/:id/consumption', async (req, res, next) => {
 	try {
@@ -187,7 +144,7 @@ app.post('/api/Meters/:id/consumption', async (req, res, next) => {
 			}
 		});
 
-		const result = await gateway.execute('channel2', Chaincodes.ReadingsBridge, Functions.ReadingsBridgeQuery, queryString, 'collection1')
+		const result = await gateway.query('channel1', Chaincodes.ReadingsBridge, Functions.ReadingsBridgeQuery, queryString, Collections.metertometerstatus)
 		res.status(200).json({ 
 			message: "Total consumption calculated!",
 			success: true,
@@ -210,26 +167,8 @@ app.post('/api/:command', async (req, res, next) => {
 	}
 });
 
-// DYNAMIC API POST URL FOR PRIVATE COLLECTIONS
-app.post('/api/:command/collections/:collection', async (req, res, next) => {
-	try {
-		await post_command_controller(req.params.command.toLowerCase(), req, res);
-	} catch (error) {
-		next(error);
-	}
-});
-
 // DYNAMIC API PUT URL
 app.put('/api/:command/:id', async (req, res, next) => {
-	try {
-		await put_command_controller(req.params.command.toLowerCase(), req, res);
-	} catch (error) {
-		next(error);
-	}
-});
-
-// DYNAMIC API PUT URL FOR SPECIFIC ITEMS OF PRIVATE COLLECTIONS
-app.put('/api/:command/:id/collections/:collection', async (req, res, next) => {
 	try {
 		await put_command_controller(req.params.command.toLowerCase(), req, res);
 	} catch (error) {
@@ -247,16 +186,6 @@ app.get('/api/Meters/concise', async (req, res, next) => {
 	}
 });
 
-// STATIC API GET URL THAT RETURNS ALL METERS OF A PRIVATE COLLECTION IN A CONCISE RESPONSE
-app.get('/api/Meters/concise/collections/:collection', async (req, res, next) => {
-	try {
-		const result = await gateway.query('channel1', Chaincodes.Info, Functions.GetAllMeters, req.params.collection)
-		res.status(200).json({ message: "Item retrieved!", success: true, result });
-	} catch (error) {
-		next(error)
-	}
-});
-
 // DYNAMIC API GET URL
 app.get('/api/:command', async (req, res, next) => {
 	try {
@@ -266,26 +195,8 @@ app.get('/api/:command', async (req, res, next) => {
 	}
 });
 
-// DYNAMIC API GET URL FOR SPECIFIC COLLECTIONS
-app.get('/api/:command/collections/:collection', async (req, res, next) => {
-	try {
-		await get_command_controller(req.params.command.toLowerCase(), req, res);
-	} catch (error) {
-		next(error);
-	}
-});
-
 // DYNAMIC API GET URL FOR SPECIFIC ITEMS
 app.get('/api/:command/:id', async (req, res, next) => {
-	try {
-		await get_command_controller(req.params.command.toLowerCase(), req, res);
-	} catch (error) {
-		next(error);
-	}
-});
-
-// DYNAMIC API GET URL FOR SPECIFIC ITEMS OF PRIVATE COLLECTIONS
-app.get('/api/:command/:id/collections/:collection', async (req, res, next) => {
 	try {
 		await get_command_controller(req.params.command.toLowerCase(), req, res);
 	} catch (error) {
@@ -360,12 +271,13 @@ async function write(res, req, body) {
 	try {
 		let { command, id, collection } = req.params;
 		command = command.toLowerCase();
+		collection = Collections[command];
 
 		if (IDMapper.hasOwnProperty(command)) {
 			id = IDMapper[command](req);
 		}
 
-		const result = await gateway.execute('channel1', Chaincodes.Info, Functions.CreateAsset, command, String(id), JSON.stringify(body), collection || '')
+		const result = await gateway.execute('channel1', Chaincodes.Info, Functions.CreateAsset, command, String(id), JSON.stringify(body), collection)
 		res.status(200).json({ message: "Item added!", success: true, result });
 	} catch (error) {
 		throw error
@@ -375,7 +287,10 @@ async function write(res, req, body) {
 async function update(res, req, body) {
 	try {
 		const { id, ...data } = body;
-		const result = await gateway.execute('channel1', Chaincodes.Info, Functions.UpdateAsset, req.params.command.toLowerCase(), req.params.id.toLowerCase(), JSON.stringify(data), req.params.collection || '')
+		const command = req.params.command.toLowerCase();
+		const collection = Collections[command];
+
+		const result = await gateway.execute('channel1', Chaincodes.Info, Functions.UpdateAsset, command, req.params.id.toLowerCase(), JSON.stringify(data), collection)
 		res.status(200).json({ message: "Item updated!", success: true, result });
 	} catch (error) {
 		throw error
@@ -385,16 +300,13 @@ async function update(res, req, body) {
 
 async function read(res, req) {
 	try {
-		let result;
-		const { command, id, collection } = req.params;
+		let { command, id, collection } = req.params;
+		command = command.toLowerCase();
+		collection = Collections[command];
 
-		if (id && collection) {
-			result = await gateway.query('channel1', Chaincodes.Info, Functions.ReadAsset, command.toLowerCase(), id, collection)
-		} else if (id && !collection) {
-			result = await gateway.query('channel1', Chaincodes.Info, Functions.ReadAsset, command.toLowerCase(), id, '')
-		} else {
-			result = await gateway.query('channel1', Chaincodes.Info, Functions.GetAllAssets, req.params.command.toLowerCase(), req.params.collection || '')
-		}
+		const result = id 
+			? await gateway.query('channel1', Chaincodes.Info, Functions.ReadAsset, command, id, collection)
+			: await gateway.query('channel1', Chaincodes.Info, Functions.GetAllAssets, command, collection)
 		res.status(200).json({ message: "Item retrieved!", success: true, result });
 	} catch (error) {
 		throw error
@@ -415,7 +327,7 @@ async function readingsByRange(res, req, body) {
 			}
 		});
 
-		const result = await gateway.execute('channel1', Chaincodes.Readings, Functions.ReadingsQuery, queryString, req.params.collection || '')
+		const result = await gateway.query('channel1', Chaincodes.Readings, Functions.ReadingsQuery, queryString, Collections.readings)
 		res.status(200).json({ message: "Item updated!", success: true, result });
 	} catch (error) {
 		throw error
@@ -431,8 +343,8 @@ async function writeMeterStatuses(res, req, body) {
 			id = IDMapper[command](req);
 		}
 
-		const processedMeterStatus = await gateway.execute('channel2', Chaincodes.ReadingsBridge, Functions.ProcessMeterStatus, JSON.stringify(body), 'collection1')
-		const result = await gateway.execute('channel1', Chaincodes.Readings, Functions.CreateAsset, command, String(id), JSON.stringify(processedMeterStatus), 'collection1')
+		const processedMeterStatus = await gateway.execute('channel1', Chaincodes.ReadingsBridge, Functions.ProcessMeterStatus, JSON.stringify(body), Collections.metertometerstatus)
+		const result = await gateway.execute('channel1', Chaincodes.Readings, Functions.CreateAsset, command, String(id), JSON.stringify(processedMeterStatus), Collections.readings)
 		res.status(200).json({ message: "Meter status added!", success: true, result });
 	} catch (error) {
 		throw error
@@ -451,7 +363,7 @@ async function writeMeterStats(res, req, body) {
 		});
 
 		// get today's meter statuses
-		const meterStatuses = await gateway.query('channel1', Chaincodes.Readings, Functions.ReadingsQuery, queryString, 'collection1')
+		const meterStatuses = await gateway.query('channel1', Chaincodes.Readings, Functions.ReadingsQuery, queryString, Collections.readings)
 
 		// group meter statuses and consumption by location
 		const location = {};
@@ -471,9 +383,9 @@ async function writeMeterStats(res, req, body) {
 				id: new Date().getTime(),
 				date_insert: new Date(),
 				total_consumption: location[location_id].consumption,
-				total_meters: (await gateway.query('channel2', Chaincodes.ReadingsBridge, Functions.MeterStatusesToMeters, JSON.stringify(location[location_id].meterStatuses), 'collection1')).length
+				total_meters: (await gateway.query('channel1', Chaincodes.ReadingsBridge, Functions.MeterStatusesToMeters, JSON.stringify(location[location_id].meterStatuses), Collections.metertometerstatus)).length
 			}
-			meterStats.push(await gateway.execute('channel1', Chaincodes.MeterStats, Functions.CreateAsset, 'meterstats', String(meterStat.id), JSON.stringify(meterStat), 'collection1'));
+			meterStats.push(await gateway.execute('channel1', Chaincodes.MeterStats, Functions.CreateAsset, 'meterstats', String(meterStat.id), JSON.stringify(meterStat), Collections.meterstats));
 		}
 
 		res.status(200).json({ message: "Meter stats added!", success: true, result: meterStats });
