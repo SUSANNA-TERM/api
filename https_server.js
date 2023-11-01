@@ -179,7 +179,7 @@ app.put('/api/:command/:id', async (req, res, next) => {
 // STATIC API GET URL THAT RETURNS ALL METERS IN A CONCISE RESPONSE
 app.get('/api/Meters/concise', async (req, res, next) => {
 	try {
-		const result = await gateway.query('channel1', Chaincodes.Info, Functions.GetAllMeters, '')
+		const result = await gateway.query('channel1', Chaincodes.Info, Functions.GetAllMeters, Collections.meters)
 		res.status(200).json({ message: "Item retrieved!", success: true, result });
 	} catch (error) {
 		next(error)
@@ -223,7 +223,6 @@ async function post_command_controller(command, req, res) {
 		'locations': write,
 		'metertypes': write,
 		'meterstatuses': writeMeterStatuses,
-		'readings': readingsByRange,
 		'meterstats': writeMeterStats
 	};
 
@@ -246,7 +245,8 @@ async function get_command_controller(command, req, res) {
 		'meters': read,
 		'locations': read,
 		'metertypes': read,
-		'meterstatuses': read
+		'meterstatuses': read,
+		'readings': readingsByRange
 	};
 
 	await command_controller(commands, command, req, res);
@@ -316,7 +316,7 @@ async function read(res, req) {
 
 async function readingsByRange(res, req, body) {
 	try {
-		const { start_date, end_date, location_id } = body;
+		const { start_date, end_date, location_id } = req.query;
 		const queryString = JSON.stringify({
 			"selector": {
 				"sensor_date": {

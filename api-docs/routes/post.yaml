@@ -138,48 +138,6 @@
         $ref: '#/components/responses/NotFound'
 ### LOCATION ROUTES ###
 
-
-### READINGS ROUTES ###
-/api/Readings:
-  post:
-    tags:
-      - Readings
-    summary: Gets all the readings for a specific location and time-frame
-    requestBody:
-     required: true
-     content:
-       application/json:
-         schema:
-           type: object
-           properties:
-             start_date:
-               type: string
-               format: date-time
-               description: Date and time of the start of the time-frame
-             end_date:
-               type: string
-               format: date-time
-               description: Date and time of the end of the time-frame
-             location_id:
-               type: integer
-               format: int32
-               description: Id of the location
-           required:
-             - start_date
-             - end_date
-    responses:
-      '200':
-        $ref: '#/components/responses/Success'
-      '400':
-        $ref: '#/components/responses/BadRequest'
-      '401':
-        $ref: '#/components/responses/Unauthorized'
-      '403':
-        $ref: '#/components/responses/Forbidden'
-      '404':
-        $ref: '#/components/responses/NotFound'
-### READINGS ROUTES ###
-
 ### METER STATS ROUTES ###
 /api/MeterStats:
   post:

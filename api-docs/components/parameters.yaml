@@ -13,3 +13,27 @@ components:
       description: ID of the item
       schema:
         type : string
+    startDate:
+      name: start_date
+      in: query
+      required: true
+      description: Date and time of the start of the time-frame
+      schema:
+        type: string
+        format: date-time
+    endDate:
+      name: end_date
+      in: query
+      required: true
+      description: Date and time of the end of the time-frame
+      schema:
+        type: string
+        format: date-time
+    location:
+      name: location_id
+      in: query
+      required: true
+      description: Id of the location
+      schema:
+        type: integer
+        format: int32

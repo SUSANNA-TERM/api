@@ -169,3 +169,26 @@
       '404':
         $ref: '#/components/responses/NotFound'
 ### LOCATION ROUTES ###
+
+### READINGS ROUTES ###
+/api/Readings:
+  get:
+    tags:
+      - Readings
+    summary: Gets all the readings for a specific location and time-frame
+    parameters:
+      - $ref: '#/components/parameters/startDate'
+      - $ref: '#/components/parameters/endDate'
+      - $ref: '#/components/parameters/location'
+    responses:
+      '200':
+        $ref: '#/components/responses/Success'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '403':
+        $ref: '#/components/responses/Forbidden'
+      '404':
+        $ref: '#/components/responses/NotFound'
+### READINGS ROUTES ###

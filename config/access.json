@@ -1,7 +1,8 @@
 [
     {
         "scope": [
-            "zitsa"
+            "zitsa",
+            "zagori"
         ],
         "resource": "/api/.*",
         "access": [
@@ -15,7 +16,7 @@
         ],
         "resource": "/api/Readings/.*",
         "access": [
-            "write"
+            "read"
         ]
     }
 ]
