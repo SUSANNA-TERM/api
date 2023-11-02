@@ -44,6 +44,7 @@ const Functions = {
 	AssetExists: 'Asset:AssetExists',
 	GetAllAssets: 'Asset:GetAllAssets',
 	GetAllMeters: 'Info:GetAllMeters',
+	AssetQuery: 'Asset:Query',
 	ReadingsQuery: 'Readings:Query',
 	ReadingsBridgeQuery: 'ReadingsBridge:Query',
 	ProcessMeterStatus: 'ReadingsBridge:ProcessMeterStatus',
@@ -246,7 +247,8 @@ async function get_command_controller(command, req, res) {
 		'locations': read,
 		'metertypes': read,
 		'meterstatuses': read,
-		'readings': readingsByRange
+		'readings': readingsByRange,
+		'meterstats': statsByRange
 	};
 
 	await command_controller(commands, command, req, res);
@@ -328,7 +330,27 @@ async function readingsByRange(res, req, body) {
 		});
 
 		const result = await gateway.query('channel1', Chaincodes.Readings, Functions.ReadingsQuery, queryString, Collections.readings)
-		res.status(200).json({ message: "Item updated!", success: true, result });
+		res.status(200).json({ message: "Retrieved readings!", success: true, result });
+	} catch (error) {
+		throw error
+	}
+}
+
+async function statsByRange(res, req, body) {
+	try {
+		const { start_date, end_date, location_id } = req.query;
+		const queryString = JSON.stringify({
+			"selector": {
+				"$and": [
+					{ "location_id": location_id },
+					{ "date_insert": { "$gte": start_date } },
+					{ "date_insert": { "$lte": end_date } }
+				]
+			}
+		});
+
+		const result = await gateway.query('channel1', Chaincodes.MeterStats, Functions.AssetQuery, queryString, Collections.meterstats)
+		res.status(200).json({ message: "Retrieved statistics!", success: true, result });
 	} catch (error) {
 		throw error
 	}

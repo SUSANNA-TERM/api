@@ -192,3 +192,26 @@
       '404':
         $ref: '#/components/responses/NotFound'
 ### READINGS ROUTES ###
+
+### METER STATS ROUTES ###
+/api/MeterStats:
+  get:
+    tags:
+      - MeterStat
+    summary: Gets daily statistics for a specific location and time-frame
+    parameters:
+      - $ref: '#/components/parameters/startDate'
+      - $ref: '#/components/parameters/endDate'
+      - $ref: '#/components/parameters/location'
+    responses:
+      '200':
+        $ref: '#/components/responses/Success'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '403':
+        $ref: '#/components/responses/Forbidden'
+      '404':
+        $ref: '#/components/responses/NotFound'
+### METER STATS ROUTES ###

@@ -14,9 +14,28 @@
         "scope": [
             "gov"
         ],
-        "resource": "/api/Readings/.*",
+        "resource": "/api/Readings.*",
         "access": [
             "read"
+        ]
+    },
+    {
+        "scope": [
+            "gov",
+            "ngo"
+        ],
+        "resource": "/api/MeterStats.*",
+        "access": [
+            "read"
+        ]
+    },
+    {
+        "scope": [
+            "cron"
+        ],
+        "resource": "/api/MeterStats",
+        "access": [
+            "write"
         ]
     }
 ]
