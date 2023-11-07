@@ -33,7 +33,8 @@ components:
       name: location_id
       in: query
       required: true
-      description: Id of the location
+      description: ID of the location. Specify -1 to return all items without a location.
       schema:
         type: integer
         format: int32
+        minimum: -1

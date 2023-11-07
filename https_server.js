@@ -319,13 +319,25 @@ async function read(res, req) {
 async function readingsByRange(res, req, body) {
 	try {
 		const { start_date, end_date, location_id } = req.query;
+		const locationSelector = location_id === -1
+			? {
+				"$or": [
+					{ "location_id": null },
+					{ "location_id": { "$exists": false } }
+				]
+			}
+			: { "location_id": location_id };
 		const queryString = JSON.stringify({
 			"selector": {
-				"sensor_date": {
-					"$gte": start_date,
-					"$lte": end_date
-				},
-				"location_id": location_id
+				"$and": [
+					locationSelector,
+					{
+						"sensor_date": {
+							"$gte": start_date,
+							"$lte": end_date
+						}
+					}
+				]
 			}
 		});
 
@@ -339,12 +351,21 @@ async function readingsByRange(res, req, body) {
 async function statsByRange(res, req, body) {
 	try {
 		const { start_date, end_date, location_id } = req.query;
+		const locationSelector = location_id === -1
+			? {
+				"$or": [
+					{ "location_id": null },
+					{ "location_id": { "$exists": false } }
+				]
+			}
+			: { "location_id": location_id };
 		const queryString = JSON.stringify({
 			"selector": {
 				"$and": [
-					{ "location_id": location_id },
+					locationSelector,
 					{ "date_insert": { "$gte": start_date } },
-					{ "date_insert": { "$lte": end_date } }
+					{ "date_insert": { "$lte": end_date } },
+					{ "total_meters": { "$exists": true } } // differentiate locations with meter stats
 				]
 			}
 		});
