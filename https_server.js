@@ -351,18 +351,10 @@ async function readingsByRange(res, req, body) {
 async function statsByRange(res, req, body) {
 	try {
 		const { start_date, end_date, location_id } = req.query;
-		const locationSelector = location_id === -1
-			? {
-				"$or": [
-					{ "location_id": null },
-					{ "location_id": { "$exists": false } }
-				]
-			}
-			: { "location_id": location_id };
 		const queryString = JSON.stringify({
 			"selector": {
 				"$and": [
-					locationSelector,
+					{ "location_id": location_id },
 					{ "date_insert": { "$gte": start_date } },
 					{ "date_insert": { "$lte": end_date } },
 					{ "total_meters": { "$exists": true } } // differentiate locations with meter stats
@@ -410,7 +402,10 @@ async function writeMeterStats(res, req, body) {
 
 		// group meter statuses and consumption by location
 		const location = {};
-		for (const { location_id, consumption, meterstatus_id } of meterStatuses) {
+		for (let { location_id = null, consumption, meterstatus_id } of meterStatuses) { 
+			if (location_id === null) {
+				location_id = -1
+			}			
 			if (!location[location_id]) {
 				location[location_id] = { meterStatuses: [], consumption: 0 };
 			}
@@ -422,7 +417,7 @@ async function writeMeterStats(res, req, body) {
 		const meterStats = []
 		for (const location_id in location) {
 			const meterStat = {
-				location_id,
+				location_id: parseInt(location_id),
 				id: new Date().getTime(),
 				date_insert: new Date(),
 				total_consumption: location[location_id].consumption,
