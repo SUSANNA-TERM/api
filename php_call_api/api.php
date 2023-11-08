@@ -1,33 +1,53 @@
 <?php
-define("hostname", "localhost");
-define("port", 8080);
-define("key", "12345");
+define("hostname", "blockchain.athenarc.gr");
+define("port", 8888);
+define("key", "aPiVWnsknDLfvbIqwEBfD87s2MwOiii4GeJDj9gcqHFghOjjMZiCCoiLfzionNNx");
+
+function rest_call($method, $command, $data = false)
+{
+    $url = 'https://'.hostname.':'.port.'/api/'.$command;
+    $curl = curl_init();
 
 
-function call_api($command, $postdata = array()) {
-if ($postdata == '' || $postdata == null)
-	$postdata = array();
+    curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+        'authorization: '.key,
+        'Content-Type: application/json'
+    ));
+    
 
-$url = 'https://'.hostname.':'.port.'/api/'.$command;
-$ContextOptions= [
-    'ssl' => [
-        'cafile' => './cert.pem',
-        'verify_peer'=> true,
-        'verify_peer_name'=> true,
-    ],
-	'http' => [
-	'ignore_errors' => true,
-	'method'  => 'POST',
-	'header'  => "Content-type: application/json\r\nauthorization: ".key,
-	'content' => json_encode($postdata)
-	]
-];
+    switch ($method)
+    {
+        case "POST":
+            curl_setopt($curl, CURLOPT_POST, 1);
+            if ($data){
+                
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+            }
+            break;
+        case "PUT":
+            curl_setopt($curl, CURLOPT_PUT, 1);
+            break;
+        default:
+            if ($data)
+                $url = sprintf("%s?%s", $url, http_build_query($data));
+    }
 
-$response = @file_get_contents($url,false,stream_context_create($ContextOptions));
-if ($response === FALSE)
-	return false;
-else
-	return json_decode($response);
+    curl_setopt($curl, CURLOPT_URL, $url);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+
+    curl_setopt($curl, CURLOPT_CAINFO, getcwd().'/cert.pem');
+    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, TRUE);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
+   
+
+    $result = curl_exec($curl);
+
+    curl_close($curl);
+    if ($result === FALSE)
+    	return false;
+    else
+    	return json_decode($result);
+
 }
 
 
