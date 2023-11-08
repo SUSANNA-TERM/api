@@ -1,47 +1,35 @@
 <?php
+
 require_once './api.php';
 
-//$postdata = array("command"=>'write', "data1"=>37, "data2"=>43);
-//$command = '';
+// POST Example (Change meter_id if you get an error "chaincode response 500, The asset meters with id ... already exists")
 
-$postdata = array("command"=>'read');
-$command = '';
+$postdata = '{"meter_id":3,"id":"string2","type":"string","metertype_id":0,"type_id":0,"mote":"string","barcode":"string","consumer":"string","provision":"string","lat":"string","lng":"string","address":"string","description":"string","location_id":0,"address_name":"string"}';
+$command = 'Meters';
 
-if (call_api($command, $postdata)) {
-	print_r(call_api($command, $postdata));
-	if (call_api($command, $postdata)->success)
-		echo 'success ';
-	}
-else
-	echo 'Request failed!';
-	
-//////// OR
-
-
-//$postdata = array("data1"=>37, "data2"=>43);
-//$command = 'write';
-
-$postdata = '';
-$command = 'read';
-
-if (call_api($command, $postdata)) {
-	print_r(call_api($command, $postdata));
-	if (call_api($command, $postdata)->success)
-		echo 'success ';
-	}
-else
-	echo 'Request failed!';
-
-/////// OR (when there are not parameters)
-
-if (call_api($command)) {
-	print_r(call_api($command));
-	if (call_api($command)->success)
-		echo 'success ';
+$call = rest_call("POST", $command, $postdata);
+if ($call) {
+	print_r($call);
+	if ($call->success)
+		echo 'Success';
 	}
 else
 	echo 'Request failed!';
 
 
+echo '<br><br>';
+
+// GET Example ( Meters/{id} )
+
+$command = 'Meters/0';
+
+$call = rest_call("GET", $command);
+if ($call) {
+	print_r($call);
+	if ($call->success)
+		echo 'Success';
+	}
+else
+	echo 'Request failed!';
 
 ?>
