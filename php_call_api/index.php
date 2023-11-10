@@ -19,6 +19,7 @@ else
 
 echo '<br><br>';
 
+// PUT Example ( Meters/{id} )
 
 $postdata = '{"meter_id":2,"id":"string2","type":"NEW_string","metertype_id":0,"type_id":0,"mote":"string","barcode":"string","consumer":"string","provision":"string","lat":"string","lng":"string","address":"string","description":"string","location_id":0,"address_name":"string"}';
 $command = 'Meters/2';
