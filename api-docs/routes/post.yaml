@@ -58,6 +58,31 @@
         $ref: '#/components/responses/Forbidden'
       '404':
         $ref: '#/components/responses/NotFound'
+
+/api/Meters/{id}/validate:
+  post:
+    tags:
+      - Meter
+    summary: Compares the given item with the respective record in the blockchain 
+    parameters:
+      - $ref: '#/components/parameters/id'
+    requestBody:
+     required: true
+     content:
+       application/json:
+         schema:
+           $ref: '#/components/schemas/Meter'
+    responses:
+      '200':
+        $ref: '#/components/responses/Success'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '403':
+        $ref: '#/components/responses/Forbidden'
+      '404':
+        $ref: '#/components/responses/NotFound'
 ### METER ROUTES ###
 
 
@@ -67,6 +92,31 @@
     tags:
       - MeterStatus
     summary: Writes the given meter status in the blockchain
+    requestBody:
+     required: true
+     content:
+       application/json:
+         schema:
+           $ref: '#/components/schemas/MeterStatus'
+    responses:
+      '200':
+        $ref: '#/components/responses/Success'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '403':
+        $ref: '#/components/responses/Forbidden'
+      '404':
+        $ref: '#/components/responses/NotFound'
+
+/api/MeterStatuses/{id}/validate:
+  post:
+    tags:
+      - MeterStatus
+    summary: Compares the given item with the respective record in the blockchain 
+    parameters:
+      - $ref: '#/components/parameters/id'
     requestBody:
      required: true
      content:
@@ -110,6 +160,31 @@
         $ref: '#/components/responses/Forbidden'
       '404':
         $ref: '#/components/responses/NotFound'
+
+/api/MeterTypes/{id}/validate:
+  post:
+    tags:
+      - MeterType
+    summary: Compares the given item with the respective record in the blockchain 
+    parameters:
+      - $ref: '#/components/parameters/id'
+    requestBody:
+     required: true
+     content:
+       application/json:
+         schema:
+           $ref: '#/components/schemas/MeterType'
+    responses:
+      '200':
+        $ref: '#/components/responses/Success'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '403':
+        $ref: '#/components/responses/Forbidden'
+      '404':
+        $ref: '#/components/responses/NotFound'
 ### METER_TYPE ROUTES ###
 
 
@@ -119,6 +194,31 @@
     tags:
       - Location
     summary: Writes the given location in the blockchain
+    requestBody:
+     required: true
+     content:
+       application/json:
+         schema:
+           $ref: '#/components/schemas/Location'
+    responses:
+      '200':
+        $ref: '#/components/responses/Success'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '403':
+        $ref: '#/components/responses/Forbidden'
+      '404':
+        $ref: '#/components/responses/NotFound'
+
+/api/Locations/{id}/validate:
+  post:
+    tags:
+      - Location
+    summary: Compares the given item with the respective record in the blockchain 
+    parameters:
+      - $ref: '#/components/parameters/id'
     requestBody:
      required: true
      content:

@@ -29,6 +29,27 @@ const IDMapper = {
 	}
 }
 
+const Validators = {
+	async meterstatuses(command, res, req) {
+		const { id } = req.params;
+		const { lastval, value, meter_id, ...meterStatus } = req.body;
+		meterStatus.consumption = value - lastval;
+
+		const result = await gateway.query('channel1', Chaincodes.Readings, Functions.ValidateAsset, command, String(id), JSON.stringify(meterStatus), Collections[command]);
+		const bridgeRecord = await gateway.query('channel1', Chaincodes.ReadingsBridge, Functions.ReadAsset, 'metertometerstatus', String(id), Collections.metertometerstatus);
+		
+		//  validate that the meter id from the bridge table is the same with the given meter id
+		if (meter_id !== bridgeRecord.meter_id) {
+			result.same = false;
+		}
+
+		res.status(200).json({ message: "Item validated!", success: true, result: result });
+	},
+	meters: validate,
+	metertypes: validate,
+	locations: validate
+}
+
 const Chaincodes = {
 	Info: 'Info',
 	Readings: 'Readings',
@@ -42,6 +63,7 @@ const Functions = {
 	UpdateAsset: 'Asset:UpdateAsset',
 	DeleteAsset: 'Asset:DeleteAsset',
 	AssetExists: 'Asset:AssetExists',
+	ValidateAsset: 'Asset:ValidateAsset',
 	GetAllAssets: 'Asset:GetAllAssets',
 	GetAllMeters: 'Info:GetAllMeters',
 	AssetQuery: 'Asset:Query',
@@ -163,6 +185,16 @@ app.post('/api/Meters/:id/consumption', async (req, res, next) => {
 app.post('/api/:command', async (req, res, next) => {
 	try {
 		await post_command_controller(req.params.command.toLowerCase(), req, res);
+	} catch (error) {
+		next(error);
+	}
+});
+
+// DYNAMIC VALIDATION URL
+app.post('/api/:command/:id/validate', async (req, res, next) => {
+	try {
+		const command = req.params.command.toLowerCase();
+		await Validators[command](command, res, req);
 	} catch (error) {
 		next(error);
 	}
@@ -430,4 +462,11 @@ async function writeMeterStats(res, req, body) {
 	} catch (error) {
 		throw error
 	}
+}
+
+async function validate(command, res, req) {
+	const { id } = req.params;
+
+	const result = await gateway.query('channel1', Chaincodes.Info, Functions.ValidateAsset, command, String(id), JSON.stringify(req.body), Collections[command]);
+	res.status(200).json({ message: "Item validated!", success: true, result: result });
 }
