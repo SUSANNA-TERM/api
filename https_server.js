@@ -351,6 +351,18 @@ async function read(res, req) {
 async function readingsByRange(res, req, body) {
 	try {
 		const { start_date, end_date, location_id } = req.query;
+		const startDate = new Date(start_date);
+		const endDate = new Date(end_date);
+
+		// find difference in days
+		const difference = endDate.getTime() - startDate.getTime();
+		const differenceInDays = difference / (1000 * 3600 * 24);
+
+		// throw error if the difference is more than 30 days
+		if (differenceInDays > 30) {
+			throw new Error('The start_date - end_date range must not be longer than 30 days.')
+		}
+		
 		const locationSelector = location_id === -1
 			? {
 				"$or": [
