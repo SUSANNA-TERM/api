@@ -104,7 +104,7 @@ const checkAuthorization = (req, res, next) => {
 
 	const hasAccess = permissions.some(permission => 
 		permission.scope.includes(group) &&
-		new RegExp(permission.resource).test(req.path) &&
+		new RegExp('^' + permission.resource).test(req.path) &&
 		((permission.access.includes('read') && req.method === 'GET') ||
 		(permission.access.includes('write') && HTTP_WRITE_METHOD_REGEXP.test(req.method)))
 	);

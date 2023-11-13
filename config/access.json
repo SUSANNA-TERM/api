@@ -1,12 +1,31 @@
 [
     {
         "scope": [
+            "admin"
+        ],
+        "resource": "/api/.*",
+        "access": [
+            "read",
+            "write"
+        ]
+    },
+    {
+        "scope": [
             "zitsa",
             "zagori"
         ],
         "resource": "/api/.*",
         "access": [
-            "read",
+            "read"
+        ]
+    },
+    {
+        "scope": [
+            "zitsa",
+            "zagori"
+        ],
+        "resource": "/api/(?!MeterTypes).*",
+        "access": [
             "write"
         ]
     },
