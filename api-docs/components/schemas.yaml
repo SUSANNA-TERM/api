@@ -74,6 +74,10 @@ components:
           maxLength: 150
           nullable: true
           description: Name of the address where the meter is located
+        in_use:
+          type: boolean
+          description: A flag that determines whether the meter is in use
+          default: true
       required:
         - meter_id
         - id
