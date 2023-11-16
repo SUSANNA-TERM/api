@@ -435,8 +435,8 @@ async function writeMeterStats(res, req, body) {
 		const queryString = JSON.stringify({
 			"selector": {
 				"sensor_date": {
-					"$gte": new Date(new Date().setHours(0, 0, 0)),
-					"$lte": new Date(new Date().setHours(23, 59, 59))
+					"$gte": new Date(new Date(body.date).setHours(0, 0, 0, 0)),
+					"$lte": new Date(new Date(body.date).setHours(23, 59, 59, 59))
 				}
 			}
 		});

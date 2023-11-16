@@ -243,7 +243,20 @@
   post:
     tags:
       - MeterStat
-    summary: Writes statistics regarding the daily consumption of a location
+    summary: Writes statistics regarding the consumption of all locations for the specified date
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date-time
+                description: The date for which the statistics will be calculated
+            required:
+              - date
     responses:
       '200':
         $ref: '#/components/responses/Success'
