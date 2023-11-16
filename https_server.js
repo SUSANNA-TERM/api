@@ -432,7 +432,23 @@ async function writeMeterStatuses(res, req, body) {
 
 async function writeMeterStats(res, req, body) {
 	try {
-		const queryString = JSON.stringify({
+		const meterStatsQuery = JSON.stringify({
+			"selector": {
+				"date_insert": {
+					"$gte": new Date(new Date(body.date).setHours(0, 0, 0, 0)),
+					"$lte": new Date(new Date(body.date).setHours(23, 59, 59, 59))
+				}
+			}
+		});
+
+		// check if statistics have been calculated for the specified date
+		const stats = await gateway.query('channel1', Chaincodes.MeterStats, Functions.AssetQuery, meterStatsQuery, Collections.meterstats)
+		if (stats && stats.length) {
+			throw new Error('Statistics have already been calculated for the specified date.')
+		}
+
+
+		const meterStatusesQuery = JSON.stringify({
 			"selector": {
 				"sensor_date": {
 					"$gte": new Date(new Date(body.date).setHours(0, 0, 0, 0)),
@@ -441,8 +457,8 @@ async function writeMeterStats(res, req, body) {
 			}
 		});
 
-		// get today's meter statuses
-		const meterStatuses = await gateway.query('channel1', Chaincodes.Readings, Functions.ReadingsQuery, queryString, Collections.readings)
+		// get meter statuses for the specified day
+		const meterStatuses = await gateway.query('channel1', Chaincodes.Readings, Functions.ReadingsQuery, meterStatusesQuery, Collections.readings)
 
 		// group meter statuses and consumption by location
 		const location = {};
@@ -458,12 +474,13 @@ async function writeMeterStats(res, req, body) {
 		}
 
 		// write meter stat for each location
+		const now = new Date();
 		const meterStats = []
 		for (const location_id in location) {
 			const meterStat = {
 				location_id: parseInt(location_id),
-				id: new Date().getTime(),
-				date_insert: new Date(),
+				id: now.getTime(),
+				date_insert: now,
 				total_consumption: location[location_id].consumption,
 				total_meters: (await gateway.query('channel1', Chaincodes.ReadingsBridge, Functions.MeterStatusesToMeters, JSON.stringify(location[location_id].meterStatuses), Collections.metertometerstatus)).length
 			}
