@@ -2,7 +2,7 @@ const swaggerDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 const version = require("./package.json").version;
 const OpenApiValidator = require('express-openapi-validator');
-
+const config = require('./config/config.json');
 
 const options = {
     failOnErrors: true,
@@ -141,7 +141,7 @@ const options = {
         ],
         servers: [
             {
-                url: "https://ledger1.drosatos.eu:8888",
+                url: `https://${config.server.hostname}:${config.server.port}`,
                 description: "Test server"
             },
             {

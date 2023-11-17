@@ -11,8 +11,6 @@ const HTTP_WRITE_METHOD_REGEXP = /^\b(POST|PUT|PATCH|DELETE)\b$/i;
 const express = require("express");
 
 const app = express();
-const hostname = '0.0.0.0';
-const port = 8888;
 
 const IDMapper = {
 	meterstatuses(req) {
@@ -84,14 +82,14 @@ const Collections = {
 }
 
 const credentials = loadCredentials(
-	'/etc/hyperledger/client/zitsa/client/zitsa_client1/msp/signcerts/cert.pem',
-	'/etc/hyperledger/client/zitsa/client/zitsa_client1/msp/keystore/key.pem',
-	'/etc/hyperledger/client/zitsa/tls-chain-cert/tls-ca-cert.pem',
-	'/etc/hyperledger/client/zitsa/client/zitsa_client1/tls/keystore/key.pem',
-	'/etc/hyperledger/client/zitsa/client/zitsa_client1/tls/signcerts/cert.pem'
+	config.fabric.clientCredentials,
+	config.fabric.clientPrivateKey,
+	config.fabric.clientTlsCert,
+	config.fabric.peerPrivateKey,
+	config.fabric.certChain
 );
 
-const gateway = new FabricGateway('ledger1.drosatos.eu:7051', credentials)
+const gateway = new FabricGateway(config.fabric.grpcAddress, config.fabric.mspId, credentials)
 
 // middleware that handles authorization and access control
 const checkAuthorization = (req, res, next) => {
@@ -125,7 +123,7 @@ const gatewayStatus = (req, res, next) => {
 }
 
 // set up swagger
-swagger(app, port)
+swagger(app, config.server.port)
 
 // apply json middleware globally
 app.use(express.json())
@@ -149,8 +147,8 @@ https.createServer(
     },
     app
   )
-  .listen(port, hostname, () => {
-    console.log("Server listening on https://"+hostname+":"+port+"/");
+	.listen(config.server.port, config.server.hostname, () => {
+		console.log(`Server listening on https://${config.server.hostname}:${config.server.port}/`);
   });
 
 // POST URL TO RETRIEVE THE TOTAL CONSUMPTION OF A METER FOR A TIME FRAME

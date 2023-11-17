@@ -25,12 +25,12 @@ function loadCredentials(clientCredentialsPath, clientPrivateKeyPath, clientTlsC
 
 // TODO: add function that checks gateway connection so that it can be called prior to any request
 class FabricGateway {
-    constructor(address, { clientCredentials, clientPrivateKey, clientTlsCert, peerPrivateKey, certChain } = {}) {
+    constructor(address, mspId, { clientCredentials, clientPrivateKey, clientTlsCert, peerPrivateKey, certChain } = {}) {
         try {
             const signer = signers.newPrivateKeySigner(clientPrivateKey);
             const systemRootCerts = Buffer.from(tls.rootCertificates.join(os.EOL));
             const rootCerts = Buffer.concat([clientTlsCert, systemRootCerts])
-            const identity = { mspId: 'Zitsa', credentials: clientCredentials };
+            const identity = { mspId, credentials: clientCredentials };
 
             this.client = new grpc.Client(address, grpc.credentials.createSsl(rootCerts, peerPrivateKey, certChain, false));
             this.gateway = connect({ identity, signer, client: this.client });
