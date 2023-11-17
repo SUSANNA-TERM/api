@@ -5,11 +5,11 @@
       - Meter
     summary: Writes the given meter in the blockchain
     requestBody:
-     required: true
-     content:
-       application/json:
-         schema:
-           $ref: '#/components/schemas/Meter'
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Meter'
     responses:
       '200':
         $ref: '#/components/responses/Success'
@@ -30,23 +30,23 @@
     parameters:
       - $ref: '#/components/parameters/id'
     requestBody:
-     required: true
-     content:
-       application/json:
-         schema:
-           type: object
-           properties:
-             start_date:
-               type: string
-               format: date-time
-               description: Date and time of the start of the time-frame
-             end_date:
-               type: string
-               format: date-time
-               description: Date and time of the end of the time-frame
-           required:
-             - start_date
-             - end_date
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              start_date:
+                type: string
+                format: date-time
+                description: Date and time of the start of the time-frame
+              end_date:
+                type: string
+                format: date-time
+                description: Date and time of the end of the time-frame
+            required:
+              - start_date
+              - end_date
     responses:
       '200':
         $ref: '#/components/responses/Success'
@@ -67,11 +67,11 @@
     parameters:
       - $ref: '#/components/parameters/id'
     requestBody:
-     required: true
-     content:
-       application/json:
-         schema:
-           $ref: '#/components/schemas/Meter'
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Meter'
     responses:
       '200':
         $ref: '#/components/responses/Success'
@@ -93,11 +93,11 @@
       - MeterStatus
     summary: Writes the given meter status in the blockchain
     requestBody:
-     required: true
-     content:
-       application/json:
-         schema:
-           $ref: '#/components/schemas/MeterStatus'
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MeterStatus'
     responses:
       '200':
         $ref: '#/components/responses/Success'
@@ -118,11 +118,11 @@
     parameters:
       - $ref: '#/components/parameters/id'
     requestBody:
-     required: true
-     content:
-       application/json:
-         schema:
-           $ref: '#/components/schemas/MeterStatus'
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MeterStatus'
     responses:
       '200':
         $ref: '#/components/responses/Success'
@@ -144,11 +144,11 @@
       - MeterType
     summary: Writes the given meter type in the blockchain
     requestBody:
-     required: true
-     content:
-       application/json:
-         schema:
-           $ref: '#/components/schemas/MeterType'
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MeterType'
     responses:
       '200':
         $ref: '#/components/responses/Success'
@@ -169,11 +169,11 @@
     parameters:
       - $ref: '#/components/parameters/id'
     requestBody:
-     required: true
-     content:
-       application/json:
-         schema:
-           $ref: '#/components/schemas/MeterType'
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MeterType'
     responses:
       '200':
         $ref: '#/components/responses/Success'
@@ -195,11 +195,11 @@
       - Location
     summary: Writes the given location in the blockchain
     requestBody:
-     required: true
-     content:
-       application/json:
-         schema:
-           $ref: '#/components/schemas/Location'
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Location'
     responses:
       '200':
         $ref: '#/components/responses/Success'
@@ -220,11 +220,11 @@
     parameters:
       - $ref: '#/components/parameters/id'
     requestBody:
-     required: true
-     content:
-       application/json:
-         schema:
-           $ref: '#/components/schemas/Location'
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Location'
     responses:
       '200':
         $ref: '#/components/responses/Success'
