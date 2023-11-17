@@ -41,7 +41,8 @@
     {
         "scope": [
             "gov",
-            "ngo"
+            "ngo",
+            "public"
         ],
         "resource": "/api/MeterStats.*",
         "access": [
@@ -50,11 +51,11 @@
     },
     {
         "scope": [
-            "cron"
+            "public"
         ],
-        "resource": "/api/MeterStats",
+        "resource": "/api/Locations",
         "access": [
-            "write"
+            "read"
         ]
     }
 ]
