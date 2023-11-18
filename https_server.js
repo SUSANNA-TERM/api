@@ -97,7 +97,14 @@ const gateway = new FabricGateway(config.fabric.grpcAddress, config.fabric.mspId
 const checkAuthorization = (req, res, next) => {
 	const key = req.headers["authorization"]
 	const group = config.apiKeys[key];
-	
+
+	res.setHeader('Access-Control-Allow-Origin', '*');
+	res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+	res.setHeader('Access-Control-Allow-Headers', '*');
+	res.setHeader('Access-Control-Allow-Credentials', true);
+
+	if (req.method === 'OPTIONS') return res.status(200).send();
+
 	if (!group) {
 		return res.status(401).json({ "result": "Unauthorized attempt!", "success": false });
 	}
