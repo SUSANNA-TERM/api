@@ -33,8 +33,8 @@ const Validators = {
 		const { lastval, value, meter_id, ...meterStatus } = req.body;
 		meterStatus.consumption = value - lastval;
 
-		const result = await gateway.query('channel1', Chaincodes.Readings, Functions.ValidateAsset, command, String(id), JSON.stringify(meterStatus), Collections[command]);
-		const bridgeRecord = await gateway.query('channel1', Chaincodes.ReadingsBridge, Functions.ReadAsset, 'metertometerstatus', String(id), Collections.metertometerstatus);
+		const result = await gateway.query(Channels.Readings, Chaincodes.Readings, Functions.ValidateAsset, command, String(id), JSON.stringify(meterStatus), Collections[command]);
+		const bridgeRecord = await gateway.query(Channels.ReadingsBridge, Chaincodes.ReadingsBridge, Functions.ReadAsset, 'metertometerstatus', String(id), Collections.metertometerstatus);
 		
 		//  validate that the meter id from the bridge table is the same with the given meter id
 		if (meter_id !== bridgeRecord.meter_id) {
@@ -47,6 +47,8 @@ const Validators = {
 	metertypes: validate,
 	locations: validate
 }
+
+const Channels = config.fabric.channels;
 
 const Chaincodes = {
 	Info: 'Info',
@@ -165,7 +167,7 @@ app.post('/api/Meters/:id/consumption', async (req, res, next) => {
 			}
 		});
 
-		const result = await gateway.query('channel1', Chaincodes.ReadingsBridge, Functions.ReadingsBridgeQuery, queryString, Collections.metertometerstatus)
+		const result = await gateway.query(Channels.ReadingsBridge, Chaincodes.ReadingsBridge, Functions.ReadingsBridgeQuery, queryString, Collections.metertometerstatus)
 		res.status(200).json({ 
 			message: "Total consumption calculated!",
 			success: true,
@@ -210,7 +212,7 @@ app.put('/api/:command/:id', async (req, res, next) => {
 // STATIC API GET URL THAT RETURNS ALL METERS IN A CONCISE RESPONSE
 app.get('/api/Meters/concise', async (req, res, next) => {
 	try {
-		const result = await gateway.query('channel1', Chaincodes.Info, Functions.GetAllMeters, Collections.meters)
+		const result = await gateway.query(Channels.Info, Chaincodes.Info, Functions.GetAllMeters, Collections.meters)
 		res.status(200).json({ message: "Item retrieved!", success: true, result });
 	} catch (error) {
 		next(error)
@@ -309,7 +311,7 @@ async function write(res, req, body) {
 			id = IDMapper[command](req);
 		}
 
-		const result = await gateway.execute('channel1', Chaincodes.Info, Functions.CreateAsset, command, String(id), JSON.stringify(body), collection)
+		const result = await gateway.execute(Channels.Info, Chaincodes.Info, Functions.CreateAsset, command, String(id), JSON.stringify(body), collection)
 		res.status(200).json({ message: "Item added!", success: true, result });
 	} catch (error) {
 		throw error
@@ -322,7 +324,7 @@ async function update(res, req, body) {
 		const command = req.params.command.toLowerCase();
 		const collection = Collections[command];
 
-		const result = await gateway.execute('channel1', Chaincodes.Info, Functions.UpdateAsset, command, req.params.id.toLowerCase(), JSON.stringify(data), collection)
+		const result = await gateway.execute(Channels.Info, Chaincodes.Info, Functions.UpdateAsset, command, req.params.id.toLowerCase(), JSON.stringify(data), collection)
 		res.status(200).json({ message: "Item updated!", success: true, result });
 	} catch (error) {
 		throw error
@@ -337,8 +339,8 @@ async function read(res, req) {
 		collection = Collections[command];
 
 		const result = id 
-			? await gateway.query('channel1', Chaincodes.Info, Functions.ReadAsset, command, id, collection)
-			: await gateway.query('channel1', Chaincodes.Info, Functions.GetAllAssets, command, collection)
+			? await gateway.query(Channels.Info, Chaincodes.Info, Functions.ReadAsset, command, id, collection)
+			: await gateway.query(Channels.Info, Chaincodes.Info, Functions.GetAllAssets, command, collection)
 		res.status(200).json({ message: "Item retrieved!", success: true, result });
 	} catch (error) {
 		throw error
@@ -383,7 +385,7 @@ async function readingsByRange(res, req, body) {
 			}
 		});
 
-		const result = await gateway.query('channel1', Chaincodes.Readings, Functions.ReadingsQuery, queryString, Collections.readings)
+		const result = await gateway.query(Channels.Readings, Chaincodes.Readings, Functions.ReadingsQuery, queryString, Collections.readings)
 		res.status(200).json({ message: "Retrieved readings!", success: true, result });
 	} catch (error) {
 		throw error
@@ -404,7 +406,7 @@ async function statsByRange(res, req, body) {
 			}
 		});
 
-		const result = await gateway.query('channel1', Chaincodes.MeterStats, Functions.AssetQuery, queryString, Collections.meterstats)
+		const result = await gateway.query(Channels.MeterStats, Chaincodes.MeterStats, Functions.AssetQuery, queryString, Collections.meterstats)
 		res.status(200).json({ message: "Retrieved statistics!", success: true, result });
 	} catch (error) {
 		throw error
@@ -420,8 +422,8 @@ async function writeMeterStatuses(res, req, body) {
 			id = IDMapper[command](req);
 		}
 
-		const processedMeterStatus = await gateway.execute('channel1', Chaincodes.ReadingsBridge, Functions.ProcessMeterStatus, JSON.stringify(body), Collections.metertometerstatus)
-		const result = await gateway.execute('channel1', Chaincodes.Readings, Functions.CreateAsset, command, String(id), JSON.stringify(processedMeterStatus), Collections.readings)
+		const processedMeterStatus = await gateway.execute(Channels.ReadingsBridge, Chaincodes.ReadingsBridge, Functions.ProcessMeterStatus, JSON.stringify(body), Collections.metertometerstatus)
+		const result = await gateway.execute(Channels.Readings, Chaincodes.Readings, Functions.CreateAsset, command, String(id), JSON.stringify(processedMeterStatus), Collections.readings)
 		res.status(200).json({ message: "Meter status added!", success: true, result });
 	} catch (error) {
 		throw error
@@ -440,7 +442,7 @@ async function writeMeterStats(res, req, body) {
 		});
 
 		// check if statistics have been calculated for the specified date
-		const stats = await gateway.query('channel1', Chaincodes.MeterStats, Functions.AssetQuery, meterStatsQuery, Collections.meterstats)
+		const stats = await gateway.query(Channels.MeterStats, Chaincodes.MeterStats, Functions.AssetQuery, meterStatsQuery, Collections.meterstats)
 		if (stats && stats.length) {
 			throw new Error('Statistics have already been calculated for the specified date.')
 		}
@@ -456,7 +458,7 @@ async function writeMeterStats(res, req, body) {
 		});
 
 		// get meter statuses for the specified day
-		const meterStatuses = await gateway.query('channel1', Chaincodes.Readings, Functions.ReadingsQuery, meterStatusesQuery, Collections.readings)
+		const meterStatuses = await gateway.query(Channels.Readings, Chaincodes.Readings, Functions.ReadingsQuery, meterStatusesQuery, Collections.readings)
 
 		// group meter statuses and consumption by location
 		const location = {};
@@ -480,9 +482,9 @@ async function writeMeterStats(res, req, body) {
 				id: now.getTime(),
 				date_insert: now,
 				total_consumption: location[location_id].consumption,
-				total_meters: (await gateway.query('channel1', Chaincodes.ReadingsBridge, Functions.MeterStatusesToMeters, JSON.stringify(location[location_id].meterStatuses), Collections.metertometerstatus)).length
+				total_meters: (await gateway.query(Channels.ReadingsBridge, Chaincodes.ReadingsBridge, Functions.MeterStatusesToMeters, JSON.stringify(location[location_id].meterStatuses), Collections.metertometerstatus)).length
 			}
-			meterStats.push(await gateway.execute('channel1', Chaincodes.MeterStats, Functions.CreateAsset, 'meterstats', String(meterStat.id), JSON.stringify(meterStat), Collections.meterstats));
+			meterStats.push(await gateway.execute(Channels.MeterStats, Chaincodes.MeterStats, Functions.CreateAsset, 'meterstats', String(meterStat.id), JSON.stringify(meterStat), Collections.meterstats));
 		}
 
 		res.status(200).json({ message: "Meter stats added!", success: true, result: meterStats });
@@ -494,6 +496,6 @@ async function writeMeterStats(res, req, body) {
 async function validate(command, res, req) {
 	const { id } = req.params;
 
-	const result = await gateway.query('channel1', Chaincodes.Info, Functions.ValidateAsset, command, String(id), JSON.stringify(req.body), Collections[command]);
+	const result = await gateway.query(Channels.Info, Chaincodes.Info, Functions.ValidateAsset, command, String(id), JSON.stringify(req.body), Collections[command]);
 	res.status(200).json({ message: "Item validated!", success: true, result: result });
 }
