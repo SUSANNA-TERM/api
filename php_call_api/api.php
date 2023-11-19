@@ -1,7 +1,7 @@
 <?php
 define("hostname", "blockchain.athenarc.gr");
 define("port", 8888);
-define("key", "aPiVWnsknDLfvbIqwEBfD87s2MwOiii4GeJDj9gcqHFghOjjMZiCCoiLfzionNNx");
+define("key", "*****");
 
 function rest_call($method, $command, $data = false)
 {
