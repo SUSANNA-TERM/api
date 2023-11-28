@@ -1,5 +1,6 @@
 const fs = require('fs');
 const https = require('https');
+const Logger = require('./logger');
 const { swagger, openAPIValidator } = require('./swagger');
 const { FabricGateway, loadCredentials } = require('./fabric-gateway-wrapper');
 const config = require('./config/config.json');
@@ -11,6 +12,8 @@ const HTTP_WRITE_METHOD_REGEXP = /^\b(POST|PUT|PATCH|DELETE)\b$/i;
 const express = require("express");
 
 const app = express();
+
+const logger = new Logger(1, './logs', 'log');
 
 const IDMapper = {
 	meterstatuses(req) {
@@ -131,6 +134,19 @@ const gatewayStatus = (req, res, next) => {
 	next();
 }
 
+// middleware that keeps track of the execution time of the request
+const time = (req, res, next) => {
+	const startTime = Date.now();
+
+	res.on('finish', () => {
+		const endTime = Date.now();
+		const elapsedTime = endTime - startTime;
+		logger.info(`${req.method} request took ${elapsedTime} milliseconds`);
+	});
+
+	next();
+}
+
 // set up swagger
 swagger(app, config.server.port)
 
@@ -145,6 +161,9 @@ openAPIValidator(app)
 
 // check gateway status prior to any request
 app.use(gatewayStatus)
+
+// keep track of the execution time of the request
+app.use(time)
 
 // create server
 https.createServer(
