@@ -13,7 +13,7 @@ const express = require("express");
 
 const app = express();
 
-const logger = new Logger(1, './logs', 'log');
+const logger = new Logger(0, './logs', 'log');
 
 const IDMapper = {
 	meterstatuses(req) {
@@ -142,7 +142,7 @@ const time = (req, res, next) => {
 	res.on('finish', () => {
 		const endTime = Date.now();
 		const elapsedTime = endTime - startTime;
-		logger.info(`${req.method} request took ${elapsedTime} milliseconds`);
+		logger.info(`${req.method} request took ${elapsedTime} milliseconds. Code: ${res.statusCode}`);
 	});
 
 	next();
@@ -271,7 +271,7 @@ app.use((err, req, res, next) => {
 	}
 
 	// format error
-	res.status(err.status || 500).json({
+	return res.status(err.status || 500).json({
 		result: err.message,
 		success: false,
 	});
