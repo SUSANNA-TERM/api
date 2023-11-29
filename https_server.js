@@ -54,10 +54,10 @@ const Validators = {
 const Channels = config.fabric.channels;
 
 const Chaincodes = {
-	Info: 'Info',
-	Readings: 'Readings',
-	ReadingsBridge: 'ReadingsBridge',
-	MeterStats: 'MeterStats'
+	Info: 'info',
+	Readings: 'readings',
+	ReadingsBridge: 'readings-bridge',
+	MeterStats: 'asset'
 };
 
 const Functions = {
@@ -77,13 +77,14 @@ const Functions = {
 }
 
 const Collections = {
-	meters: 'collection1',
+	meters: 'meters',
 	locations: '',
-	metertypes: 'collection2',
+	metertypes: 'metertypes',
 	meterstatuses: '',
 	readings: '',
 	meterstats: '',
-	metertometerstatus: 'collection3'
+	metertometerstatus: 'metertometerstatus',
+	contracts: 'contracts'
 }
 
 const credentials = loadCredentials(
